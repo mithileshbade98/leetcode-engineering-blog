@@ -1,13 +1,6 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { supabaseAdmin } from '@/lib/supabaseClient';
 
-const REVIEWS_DIR = path.join(process.cwd(), 'data', 'reviews');
-
-// Ensure reviews directory exists
-if (!fs.existsSync(REVIEWS_DIR)) {
-  fs.mkdirSync(REVIEWS_DIR, { recursive: true });
-}
 
 export interface ReviewData {
   problemId: string;
@@ -55,27 +48,38 @@ export async function POST(request: Request) {
   try {
     const { problemId, quality } = await request.json();
     
-    const reviewFile = path.join(REVIEWS_DIR, `${problemId}.json`);
-    let reviewData: ReviewData;
+    const { data: existing } = await supabaseAdmin
+      .from('reviews')
+      .select('*')
+      .eq('problem_id', problemId)
+      .maybeSingle();
 
-    if (fs.existsSync(reviewFile)) {
-      reviewData = JSON.parse(fs.readFileSync(reviewFile, 'utf-8'));
-    } else {
-      reviewData = {
-        problemId,
-        lastReviewed: new Date().toISOString(),
-        nextReview: new Date().toISOString(),
-        interval: 0,
-        repetitions: 0,
-        easeFactor: 2.5,
-        difficulty: 'Good'
-      };
-    }
+    let reviewData: ReviewData = existing || {
+      problemId,
+      lastReviewed: new Date().toISOString(),
+      nextReview: new Date().toISOString(),
+      interval: 0,
+      repetitions: 0,
+      easeFactor: 2.5,
+      difficulty: 'Good'
+    };
 
     const updated = calculateNextReview(reviewData, quality);
     reviewData = { ...reviewData, ...updated };
 
-    fs.writeFileSync(reviewFile, JSON.stringify(reviewData, null, 2));
+    const { error } = await supabaseAdmin
+      .from('reviews')
+      .upsert({
+        problem_id: reviewData.problemId,
+        last_reviewed: reviewData.lastReviewed,
+        next_review: reviewData.nextReview,
+        interval: reviewData.interval,
+        repetitions: reviewData.repetitions,
+        ease_factor: reviewData.easeFactor,
+        difficulty: reviewData.difficulty
+      });
+
+    if (error) throw error;
 
     return NextResponse.json({ success: true, reviewData });
   } catch (error) {
@@ -85,27 +89,20 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    if (!fs.existsSync(REVIEWS_DIR)) {
-      return NextResponse.json({ reviews: [] });
-    }
+    const { data, error } = await supabaseAdmin.from('reviews').select('*');
 
-    const files = fs.readdirSync(REVIEWS_DIR);
-    const reviews = files
-      .filter(file => file.endsWith('.json'))
-      .map(file => {
-        const content = fs.readFileSync(path.join(REVIEWS_DIR, file), 'utf-8');
-        return JSON.parse(content);
-      });
+    if (error) throw error;
 
-    // Get problems due for review
+    const reviews = data || [];
+
     const now = new Date();
-    const dueReviews = reviews.filter(r => new Date(r.nextReview) <= now);
+    const dueReviews = reviews.filter(r => new Date(r.next_review) <= now);
 
-    return NextResponse.json({ 
-      reviews, 
+    return NextResponse.json({
+      reviews,
       dueReviews,
       totalReviews: reviews.length,
-      dueCount: dueReviews.length 
+      dueCount: dueReviews.length
     });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch reviews' }, { status: 500 });

@@ -1,75 +1,70 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-
-const CHECKINS_FILE = path.join(process.cwd(), 'data', 'checkins.json');
+import { supabaseAdmin } from '@/lib/supabaseClient';
 
 interface CheckinData {
-  dates: string[];
-  streaks: {
-    current: number;
-    longest: number;
-    lastCheckin: string;
-  };
+  date: string;
 }
 
-// Ensure data directory exists
-const dataDir = path.join(process.cwd(), 'data');
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+function calculateStreaks(dates: string[]): { current: number; longest: number; lastCheckin: string | null } {
+  if (dates.length === 0) {
+    return { current: 0, longest: 0, lastCheckin: null };
+  }
+
+  const sorted = dates
+    .map(d => new Date(d))
+    .sort((a, b) => a.getTime() - b.getTime());
+
+  let current = 1;
+  let longest = 1;
+
+  for (let i = 1; i < sorted.length; i++) {
+    const diff = (sorted[i].getTime() - sorted[i - 1].getTime()) / (1000 * 60 * 60 * 24);
+    if (diff === 1) {
+      current += 1;
+    } else if (diff > 1) {
+      current = 1;
+    }
+    if (current > longest) longest = current;
+  }
+
+  return { current, longest, lastCheckin: sorted[sorted.length - 1].toISOString().split('T')[0] };
 }
 
 export async function POST() {
   try {
-    let checkinData: CheckinData = {
-      dates: [],
-      streaks: {
-        current: 0,
-        longest: 0,
-        lastCheckin: ''
-      }
-    };
-
-    // Read existing data
-    if (fs.existsSync(CHECKINS_FILE)) {
-      const content = fs.readFileSync(CHECKINS_FILE, 'utf-8');
-      checkinData = JSON.parse(content);
-    }
-
     const today = new Date().toISOString().split('T')[0];
-    
-    // Check if already checked in today
-    if (checkinData.dates.includes(today)) {
-      return NextResponse.json({ 
+
+    const { data: existing } = await supabaseAdmin
+      .from('checkins')
+      .select('date')
+      .eq('date', today)
+      .maybeSingle();
+
+    const { data: allDatesData } = await supabaseAdmin
+      .from('checkins')
+      .select('date')
+      .order('date');
+
+    const dates = allDatesData?.map(d => d.date as string) || [];
+
+    if (existing) {
+      const streak = calculateStreaks(dates);
+      return NextResponse.json({
         message: 'Already checked in today!',
-        currentStreak: checkinData.streaks.current 
+        currentStreak: streak.current,
+        longestStreak: streak.longest
       });
     }
 
-    // Add today's checkin
-    checkinData.dates.push(today);
-    
-    // Calculate streak
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split('T')[0];
-    
-    if (checkinData.streaks.lastCheckin === yesterdayStr) {
-      checkinData.streaks.current += 1;
-    } else {
-      checkinData.streaks.current = 1;
-    }
-    
-    checkinData.streaks.lastCheckin = today;
-    checkinData.streaks.longest = Math.max(checkinData.streaks.current, checkinData.streaks.longest);
+    await supabaseAdmin.from('checkins').insert({ date: today });
 
-    // Save data
-    fs.writeFileSync(CHECKINS_FILE, JSON.stringify(checkinData, null, 2));
+    const updatedDates = [...dates, today];
+    const streak = calculateStreaks(updatedDates);
 
     return NextResponse.json({
       success: true,
-      currentStreak: checkinData.streaks.current,
-      longestStreak: checkinData.streaks.longest
+      currentStreak: streak.current,
+      longestStreak: streak.longest
     });
 
   } catch (error) {
@@ -80,22 +75,19 @@ export async function POST() {
 
 export async function GET() {
   try {
-    if (!fs.existsSync(CHECKINS_FILE)) {
-      return NextResponse.json({
-        currentStreak: 0,
-        longestStreak: 0,
-        lastCheckin: null
-      });
-    }
+    const { data } = await supabaseAdmin
+      .from('checkins')
+      .select('date')
+      .order('date');
 
-    const content = fs.readFileSync(CHECKINS_FILE, 'utf-8');
-    const checkinData: CheckinData = JSON.parse(content);
+    const dates = data?.map(d => d.date as string) || [];
+    const streak = calculateStreaks(dates);
 
     return NextResponse.json({
-      currentStreak: checkinData.streaks.current,
-      longestStreak: checkinData.streaks.longest,
-      lastCheckin: checkinData.streaks.lastCheckin,
-      totalDays: checkinData.dates.length
+      currentStreak: streak.current,
+      longestStreak: streak.longest,
+      lastCheckin: streak.lastCheckin,
+      totalDays: dates.length
     });
 
   } catch (error) {
