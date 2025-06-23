@@ -1,13 +1,6 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { supabaseAdmin } from '@/lib/supabaseClient';
 
-const BLOGS_DIR = path.join(process.cwd(), 'data', 'blogs');
-
-// Ensure blogs directory exists
-if (!fs.existsSync(BLOGS_DIR)) {
-  fs.mkdirSync(BLOGS_DIR, { recursive: true });
-}
 
 export async function GET(request: Request) {
   try {
@@ -15,19 +8,14 @@ export async function GET(request: Request) {
     const category = searchParams.get('category');
     const limit = searchParams.get('limit');
 
-    if (!fs.existsSync(BLOGS_DIR)) {
-      return NextResponse.json({ blogs: [] });
-    }
+    const { data, error } = await supabaseAdmin
+      .from('blogs')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-    const files = fs.readdirSync(BLOGS_DIR);
-    let blogs = files
-      .filter(file => file.endsWith('.json'))
-      .map(file => {
-        const filePath = path.join(BLOGS_DIR, file);
-        const content = fs.readFileSync(filePath, 'utf-8');
-        return JSON.parse(content);
-      })
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    if (error) throw error;
+
+    let blogs = data || [];
 
     // Filter by category if specified
     if (category) {
@@ -53,23 +41,25 @@ export async function POST(request: Request) {
     
     const timestamp = new Date().toISOString();
     const blogId = `blog-${Date.now()}`;
-    
-    const enrichedData = {
-      ...blogData,
-      id: blogId,
-      createdAt: timestamp,
-      updatedAt: timestamp
-    };
 
-    const fileName = `${blogId}.json`;
-    const filePath = path.join(BLOGS_DIR, fileName);
-    
-    fs.writeFileSync(filePath, JSON.stringify(enrichedData, null, 2));
-    
-    return NextResponse.json({ 
-      success: true, 
+    const { error } = await supabaseAdmin.from('blogs').insert({
+      id: blogId,
+      title: blogData.title,
+      category: blogData.category,
+      content: blogData.content,
+      tags: blogData.tags,
+      key_takeaways: blogData.keyTakeaways,
+      related_problems: blogData.relatedProblems,
+      created_at: timestamp,
+      updated_at: timestamp
+    });
+
+    if (error) throw error;
+
+    return NextResponse.json({
+      success: true,
       blogId,
-      message: 'Blog saved successfully!' 
+      message: 'Blog saved successfully!'
     });
 
   } catch (error) {

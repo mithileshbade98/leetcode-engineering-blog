@@ -1,15 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import fs from 'fs';
-import path from 'path';
+import { supabaseAdmin } from '@/lib/supabaseClient';
 
-// Simple file-based storage for now
-const PROBLEMS_DIR = path.join(process.cwd(), 'data', 'problems');
-
-// Ensure problems directory exists
-if (!fs.existsSync(PROBLEMS_DIR)) {
-  fs.mkdirSync(PROBLEMS_DIR, { recursive: true });
-}
 
 export async function POST(request: Request) {
   try {
@@ -27,21 +19,19 @@ export async function POST(request: Request) {
     const timestamp = new Date().toISOString();
     const problemId = `problem-${problemData.leetcodeNumber}-${Date.now()}`;
     
-    const enrichedData = {
-      ...problemData,
-      id: problemId,
-      createdAt: timestamp,
-      updatedAt: timestamp
-    };
 
-    // Save to JSON file
-    const fileName = `${problemId}.json`;
-    const filePath = path.join(PROBLEMS_DIR, fileName);
-    
-    fs.writeFileSync(filePath, JSON.stringify(enrichedData, null, 2));
-    
-    console.log(`✅ Problem saved: ${fileName}`);
-    console.log('📁 Data location:', filePath);
+    const { error } = await supabaseAdmin.from('problems').insert({
+      id: problemId,
+      leetcode_number: problemData.leetcodeNumber,
+      title: problemData.title,
+      difficulty: problemData.difficulty,
+      description: problemData.description,
+      tags: problemData.tags,
+      created_at: timestamp,
+      updated_at: timestamp
+    });
+
+    if (error) throw error;
     
     return NextResponse.json({ 
       success: true, 
@@ -68,21 +58,14 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (!fs.existsSync(PROBLEMS_DIR)) {
-      return NextResponse.json({ problems: [] });
-    }
+    const { data, error } = await supabaseAdmin
+      .from('problems')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-    const files = fs.readdirSync(PROBLEMS_DIR);
-    const problems = files
-      .filter(file => file.endsWith('.json'))
-      .map(file => {
-        const filePath = path.join(PROBLEMS_DIR, file);
-        const content = fs.readFileSync(filePath, 'utf-8');
-        return JSON.parse(content);
-      })
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    if (error) throw error;
 
-    return NextResponse.json({ problems });
+    return NextResponse.json({ problems: data ?? [] });
 
   } catch (error) {
     console.error('❌ Error fetching problems:', error);
