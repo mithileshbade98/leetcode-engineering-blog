@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, KeyboardEvent } from "react";
+import { useState, useRef, useEffect, KeyboardEvent } from "react";
 
 interface CodeEditorProps {
   value: string;
@@ -18,6 +18,12 @@ export default function CodeEditor({
 }: CodeEditorProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [lineCount, setLineCount] = useState(1);
+
+  // Keep line numbers in sync with the initial value
+  useEffect(() => {
+    const lines = value.split("\n").length;
+    setLineCount(lines);
+  }, [value]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     const textarea = e.currentTarget;
