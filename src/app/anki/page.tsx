@@ -1,33 +1,33 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
 
 interface Problem {
   id: string;
-  leetcodeNumber: number;
+  leetcode_number: number;
   title: string;
   difficulty: string;
   description: string;
   solution: string;
+  category: string;
 }
 
-interface ReviewData {
-  problemId: string;
-  lastReviewed: string;
-  nextReview: string;
-  interval: number;
+interface Review {
+  id: string;
+  problem_id: string;
+  next_review: string;
+  interval_days: number;
   repetitions: number;
-  easeFactor: number;
+  ease_factor: number;
+  problems: Problem;
 }
 
 export default function AnkiReviewPage() {
-  const [problems, setProblems] = useState<Problem[]>([]);
-  const [dueReviews, setDueReviews] = useState<ReviewData[]>([]);
-  const [currentProblem, setCurrentProblem] = useState<Problem | null>(null);
+  const [dueReviews, setDueReviews] = useState<Review[]>([]);
+  const [currentReview, setCurrentReview] = useState<Review | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     fetchDueReviews();
@@ -35,25 +35,12 @@ export default function AnkiReviewPage() {
 
   const fetchDueReviews = async () => {
     try {
-      // Fetch all problems
-      const problemsRes = await fetch("/api/problems");
-      const problemsData = await problemsRes.json();
-      setProblems(problemsData.problems || []);
+      const response = await fetch("/api/reviews");
+      const data = await response.json();
 
-      // Fetch reviews
-      const reviewsRes = await fetch("/api/reviews");
-      const reviewsData = await reviewsRes.json();
-      setDueReviews(reviewsData.dueReviews || []);
-
-      // Set first due problem
-      if (
-        reviewsData.dueReviews?.length > 0 &&
-        problemsData.problems?.length > 0
-      ) {
-        const firstDueProblem = problemsData.problems.find(
-          (p: Problem) => p.id === reviewsData.dueReviews[0].problemId
-        );
-        setCurrentProblem(firstDueProblem || null);
+      if (data.dueReviews && data.dueReviews.length > 0) {
+        setDueReviews(data.dueReviews);
+        setCurrentReview(data.dueReviews[0]);
       }
     } catch (error) {
       console.error("Failed to fetch reviews:", error);
@@ -63,36 +50,40 @@ export default function AnkiReviewPage() {
   };
 
   const handleReview = async (quality: 0 | 1 | 2 | 3 | 4 | 5) => {
-    if (!currentProblem) return;
+    if (!currentReview) return;
 
     try {
       await fetch("/api/reviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          problemId: currentProblem.id,
+          problemId: currentReview.problem_id,
           quality,
         }),
       });
 
       // Move to next problem
       const remainingReviews = dueReviews.filter(
-        (r) => r.problemId !== currentProblem.id
+        (r) => r.id !== currentReview.id
       );
       setDueReviews(remainingReviews);
 
       if (remainingReviews.length > 0) {
-        const nextProblem = problems.find(
-          (p) => p.id === remainingReviews[0].problemId
-        );
-        setCurrentProblem(nextProblem || null);
+        setCurrentReview(remainingReviews[0]);
         setShowAnswer(false);
       } else {
-        setCurrentProblem(null);
+        setCurrentReview(null);
       }
     } catch (error) {
       console.error("Failed to save review:", error);
     }
+  };
+
+  const categoryConfig = {
+    "ml-ops": { icon: "🤖", color: "text-orange-400" },
+    "distributed-systems": { icon: "🌐", color: "text-blue-400" },
+    "recommendation-systems": { icon: "🎯", color: "text-green-400" },
+    general: { icon: "📚", color: "text-purple-400" },
   };
 
   if (loading) {
@@ -103,7 +94,7 @@ export default function AnkiReviewPage() {
     );
   }
 
-  if (!currentProblem) {
+  if (!currentReview) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
@@ -122,6 +113,11 @@ export default function AnkiReviewPage() {
       </div>
     );
   }
+
+  const problem = currentReview.problems;
+  const config =
+    categoryConfig[problem.category as keyof typeof categoryConfig] ||
+    categoryConfig.general;
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -155,7 +151,8 @@ export default function AnkiReviewPage() {
               className="h-full bg-gradient-to-r from-purple-600 to-blue-600 transition-all duration-500"
               style={{
                 width: `${
-                  ((problems.length - dueReviews.length) / problems.length) *
+                  ((dueReviews.length - dueReviews.indexOf(currentReview) - 1) /
+                    dueReviews.length) *
                   100
                 }%`,
               }}
@@ -167,24 +164,27 @@ export default function AnkiReviewPage() {
         <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8">
           <div className="mb-6">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-mono text-gray-400">
-                #{currentProblem.leetcodeNumber}
-              </span>
+              <div className="flex items-center space-x-3">
+                <span className="text-3xl">{config.icon}</span>
+                <span className="text-sm font-mono text-gray-400">
+                  #{problem.leetcode_number}
+                </span>
+              </div>
               <span
                 className={`text-xs px-3 py-1 rounded-full ${
-                  currentProblem.difficulty === "Easy"
+                  problem.difficulty === "Easy"
                     ? "bg-green-500/20 text-green-300"
-                    : currentProblem.difficulty === "Medium"
+                    : problem.difficulty === "Medium"
                     ? "bg-yellow-500/20 text-yellow-300"
                     : "bg-red-500/20 text-red-300"
                 }`}
               >
-                {currentProblem.difficulty}
+                {problem.difficulty}
               </span>
             </div>
-            <h2 className="text-2xl font-bold mb-4">{currentProblem.title}</h2>
+            <h2 className="text-2xl font-bold mb-4">{problem.title}</h2>
             <p className="text-gray-300 leading-relaxed">
-              {currentProblem.description}
+              {problem.description}
             </p>
           </div>
 
@@ -199,7 +199,7 @@ export default function AnkiReviewPage() {
             <div>
               <div className="bg-gray-900 rounded-2xl p-6 mb-6 font-mono">
                 <pre className="text-green-300 text-sm overflow-x-auto whitespace-pre-wrap">
-                  {currentProblem.solution}
+                  {problem.solution}
                 </pre>
               </div>
 
@@ -236,6 +236,31 @@ export default function AnkiReviewPage() {
               </div>
             </div>
           )}
+        </div>
+
+        {/* Review Stats */}
+        <div className="mt-8 bg-white/5 backdrop-blur-xl rounded-2xl p-6">
+          <h3 className="text-lg font-semibold mb-4">Review Statistics</h3>
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div>
+              <div className="text-2xl font-bold text-purple-400">
+                {currentReview.repetitions}
+              </div>
+              <div className="text-xs text-gray-400">Repetitions</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-blue-400">
+                {currentReview.interval_days}d
+              </div>
+              <div className="text-xs text-gray-400">Current Interval</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-green-400">
+                {currentReview.ease_factor.toFixed(2)}
+              </div>
+              <div className="text-xs text-gray-400">Ease Factor</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

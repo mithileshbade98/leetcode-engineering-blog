@@ -42,7 +42,9 @@ The content is organized as follows:
 <directory_structure>
 data/
   problems/
+    problem-1854-1750628162767.json
     problem-5-1750624520906.json
+  checkins.json
 public/
   next.svg
   vercel.svg
@@ -52,34 +54,90 @@ src/
       dashboard/
         page.tsx
       page.tsx
+    anki/
+      page.tsx
     api/
       auth/
         login/
           route.ts
+      blogs/
+        route.ts
+      checkin/
+        calendar/
+          route.ts
+        route.ts
+      github/
+        commit/
+          route.ts
+      notifications/
+        route.ts
       problems/
-        [id]/
-          page.tsx
         create/
           route.ts
-        page.tsx
         route.ts
+      reviews/
+        route.ts
+    blogs/
+      [id]/
+        page.tsx
+      page.tsx
     components/
       CodeEditor.tsx
+      StreakCalendar.tsx
+    problems/
+      [id]/
+        page.tsx
+      page.tsx
+      repomix-output.xml
     globals.css
     layout.tsx
     page.tsx
+  lib/
+    supabaseClient.ts
+.env.example
 .eslintrc.json
 .gitignore
+DATABASE_SCHEMA.md
 next.config.js
 package.json
 postcss.config.js
 README.md
+schema.sql
 tailwind.config.ts
 tsconfig.json
 </directory_structure>
 
 <files>
 This section contains the contents of the repository's files.
+
+<file path="data/problems/problem-1854-1750628162767.json">
+{
+  "leetcodeNumber": 1854,
+  "title": "Maximum Population Year",
+  "difficulty": "Easy",
+  "description": "You are given a 2D integer array logs where each logs[i] = [birthi, deathi] indicates the birth and death years of the ith person.\n\nThe population of some year x is the number of people alive during that year.\nThe ith person is counted in year x if birthi <= x < deathi (that is, they are alive from birth year up to, but not including, the death year).\n\nReturn the earliest year with the maximum population.",
+  "solution": "class Solution:\n    def maximumPopulation(self, logs):\n        # Population changes for each year from 1950 to 2050\n        population = [0] * 101  # Index 0 -> 1950, index 100 -> 2050\n\n        # Mark +1 at each birth, -1 at each death (exclusive)\n        for birth, death in logs:\n            population[birth - 1950] += 1\n            population[death - 1950] -= 1\n\n        # Sweep through years, track running population and max\n        max_pop = 0\n        max_year = 1950\n        curr_pop = 0\n        for i in range(101):\n            curr_pop += population[i]\n            if curr_pop > max_pop:\n                max_pop = curr_pop\n                max_year = 1950 + i\n\n        return max_year\n",
+  "timeComplexity": "O(n)",
+  "spaceComplexity": "O(u)",
+  "tags": [],
+  "leetcodeUrl": "https://leetcode.com/problems/maximum-population-year/description/",
+  "lldQuestion": "",
+  "lldApproach": "",
+  "lldTechStack": [],
+  "lldCodeExample": "",
+  "hldQuestion": "",
+  "hldApproach": "",
+  "hldTechStack": [],
+  "hldArchitecture": "",
+  "systemDesignQuestion": "",
+  "systemDesignApproach": "",
+  "systemDesignDiagram": "",
+  "scalingConsiderations": "",
+  "id": "problem-1854-1750628162767",
+  "createdAt": "2025-06-22T21:36:02.767Z",
+  "updatedAt": "2025-06-22T21:36:02.767Z"
+}
+</file>
 
 <file path="data/problems/problem-5-1750624520906.json">
 {
@@ -109,583 +167,25 @@ This section contains the contents of the repository's files.
 }
 </file>
 
-<file path="src/app/admin/dashboard/page.tsx">
-"use client";
-import { useState, useEffect } from "react";
-
-interface ProblemData {
-  // LeetCode Details
-  leetcodeNumber: number;
-  title: string;
-  difficulty: "Easy" | "Medium" | "Hard";
-  description: string;
-  solution: string;
-  timeComplexity: string;
-  spaceComplexity: string;
-  tags: string[];
-
-  // LLD (Low Level Design)
-  lldQuestion: string;
-  lldApproach: string;
-  lldTechStack: string[];
-  lldCodeExample: string;
-
-  // HLD (High Level Design)
-  hldQuestion: string;
-  hldApproach: string;
-  hldTechStack: string[];
-  hldArchitecture: string;
-
-  // System Design
-  systemDesignQuestion: string;
-  systemDesignApproach: string;
-  systemDesignDiagram: string;
-  scalingConsiderations: string;
+<file path="data/checkins.json">
+{
+  "dates": [
+    "2025-06-23"
+  ],
+  "streaks": {
+    "current": 1,
+    "longest": 1,
+    "lastCheckin": "2025-06-23"
+  }
 }
+</file>
 
-export default function AdminDashboard() {
-  const [formData, setFormData] = useState<ProblemData>({
-    leetcodeNumber: 0,
-    title: "",
-    difficulty: "Easy",
-    description: "",
-    solution: "",
-    timeComplexity: "",
-    spaceComplexity: "",
-    tags: [],
-    lldQuestion: "",
-    lldApproach: "",
-    lldTechStack: [],
-    lldCodeExample: "",
-    hldQuestion: "",
-    hldApproach: "",
-    hldTechStack: [],
-    hldArchitecture: "",
-    systemDesignQuestion: "",
-    systemDesignApproach: "",
-    systemDesignDiagram: "",
-    scalingConsiderations: "",
-  });
+<file path="public/next.svg">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 394 80"><path fill="#000" d="M262 0h68.5v12.7h-27.2v66.6h-13.6V12.7H262V0ZM149 0v12.7H94v20.4h44.3v12.6H94v21h55v12.6H80.5V0h68.7zm34.3 0h-17.8l63.8 79.4h17.9l-32-39.7 32-39.6h-17.9l-23 28.6-23-28.6zm18.3 56.7-9-11-27.1 33.7h17.8l18.3-22.7z"/><path fill="#000" d="M81 79.3 17 0H0v79.3h13.6V17l50.2 62.3H81Zm252.6-.4c-1 0-1.8-.4-2.5-1s-1.1-1.6-1.1-2.6.3-1.8 1-2.5 1.6-1 2.6-1 1.8.3 2.5 1a3.4 3.4 0 0 1 .6 4.3 3.7 3.7 0 0 1-3 1.8zm23.2-33.5h6v23.3c0 2.1-.4 4-1.3 5.5a9.1 9.1 0 0 1-3.8 3.5c-1.6.8-3.5 1.3-5.7 1.3-2 0-3.7-.4-5.3-1s-2.8-1.8-3.7-3.2c-.9-1.3-1.4-3-1.4-5h6c.1.8.3 1.6.7 2.2s1 1.2 1.6 1.5c.7.4 1.5.5 2.4.5 1 0 1.8-.2 2.4-.6a4 4 0 0 0 1.6-1.8c.3-.8.5-1.8.5-3V45.5zm30.9 9.1a4.4 4.4 0 0 0-2-3.3 7.5 7.5 0 0 0-4.3-1.1c-1.3 0-2.4.2-3.3.5-.9.4-1.6 1-2 1.6a3.5 3.5 0 0 0-.3 4c.3.5.7.9 1.3 1.2l1.8 1 2 .5 3.2.8c1.3.3 2.5.7 3.7 1.2a13 13 0 0 1 3.2 1.8 8.1 8.1 0 0 1 3 6.5c0 2-.5 3.7-1.5 5.1a10 10 0 0 1-4.4 3.5c-1.8.8-4.1 1.2-6.8 1.2-2.6 0-4.9-.4-6.8-1.2-2-.8-3.4-2-4.5-3.5a10 10 0 0 1-1.7-5.6h6a5 5 0 0 0 3.5 4.6c1 .4 2.2.6 3.4.6 1.3 0 2.5-.2 3.5-.6 1-.4 1.8-1 2.4-1.7a4 4 0 0 0 .8-2.4c0-.9-.2-1.6-.7-2.2a11 11 0 0 0-2.1-1.4l-3.2-1-3.8-1c-2.8-.7-5-1.7-6.6-3.2a7.2 7.2 0 0 1-2.4-5.7 8 8 0 0 1 1.7-5 10 10 0 0 1 4.3-3.5c2-.8 4-1.2 6.4-1.2 2.3 0 4.4.4 6.2 1.2 1.8.8 3.2 2 4.3 3.4 1 1.4 1.5 3 1.5 5h-5.8z"/></svg>
+</file>
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [currentTab, setCurrentTab] = useState("leetcode");
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      const response = await fetch("/api/problems/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        alert("Problem saved successfully!");
-        // Reset form
-        setFormData({
-          leetcodeNumber: 0,
-          title: "",
-          difficulty: "Easy",
-          description: "",
-          solution: "",
-          timeComplexity: "",
-          spaceComplexity: "",
-          tags: [],
-          lldQuestion: "",
-          lldApproach: "",
-          lldTechStack: [],
-          lldCodeExample: "",
-          hldQuestion: "",
-          hldApproach: "",
-          hldTechStack: [],
-          hldArchitecture: "",
-          systemDesignQuestion: "",
-          systemDesignApproach: "",
-          systemDesignDiagram: "",
-          scalingConsiderations: "",
-        });
-      } else {
-        alert("Error saving problem");
-      }
-    } catch (error) {
-      alert("Error saving problem");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const updateFormData = (field: keyof ProblemData, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const addTag = (
-    tag: string,
-    field: "tags" | "lldTechStack" | "hldTechStack"
-  ) => {
-    if (tag.trim()) {
-      updateFormData(field, [...formData[field], tag.trim()]);
-    }
-  };
-
-  const removeTag = (
-    index: number,
-    field: "tags" | "lldTechStack" | "hldTechStack"
-  ) => {
-    updateFormData(
-      field,
-      formData[field].filter((_, i) => i !== index)
-    );
-  };
-
-  const tabs = [
-    { id: "leetcode", label: "LeetCode Problem", icon: "🧮" },
-    { id: "lld", label: "Low Level Design", icon: "🎨" },
-    { id: "hld", label: "High Level Design", icon: "⚙️" },
-    { id: "system", label: "System Design", icon: "🏗️" },
-  ];
-
-  return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Header */}
-      <div className="bg-white/5 backdrop-blur-xl border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-            Admin Dashboard
-          </h1>
-          <p className="text-gray-400 mt-2">
-            Create new LeetCode → Engineering post
-          </p>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Tab Navigation */}
-          <div className="flex flex-wrap gap-2 mb-8">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setCurrentTab(tab.id)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 ${
-                  currentTab === tab.id
-                    ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white"
-                    : "bg-white/5 text-gray-400 hover:text-white hover:bg-white/10"
-                }`}
-              >
-                <span>{tab.icon}</span>
-                <span className="hidden sm:block">{tab.label}</span>
-              </button>
-            ))}
-          </div>
-
-          {/* LeetCode Tab */}
-          {currentTab === "leetcode" && (
-            <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 space-y-6">
-              <h2 className="text-2xl font-bold text-purple-400 mb-6">
-                🧮 LeetCode Problem
-              </h2>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-gray-300 mb-2">
-                    Problem Number
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.leetcodeNumber || ""}
-                    onChange={(e) =>
-                      updateFormData("leetcodeNumber", parseInt(e.target.value))
-                    }
-                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
-                    placeholder="1"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-gray-300 mb-2">Difficulty</label>
-                  <select
-                    value={formData.difficulty}
-                    onChange={(e) =>
-                      updateFormData("difficulty", e.target.value)
-                    }
-                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
-                  >
-                    <option value="Easy">Easy</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Hard">Hard</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-gray-300 mb-2">Title</label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => updateFormData("title", e.target.value)}
-                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
-                  placeholder="Two Sum"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-300 mb-2">Description</label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) =>
-                    updateFormData("description", e.target.value)
-                  }
-                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white h-32"
-                  placeholder="Given an array of integers, return indices of two numbers such that they add up to a specific target..."
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-300 mb-2">
-                  Solution (Code)
-                </label>
-                <textarea
-                  value={formData.solution}
-                  onChange={(e) => updateFormData("solution", e.target.value)}
-                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white h-40 font-mono text-sm"
-                  placeholder="function twoSum(nums: number[], target: number): number[] {..."
-                  required
-                />
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-gray-300 mb-2">
-                    Time Complexity
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.timeComplexity}
-                    onChange={(e) =>
-                      updateFormData("timeComplexity", e.target.value)
-                    }
-                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
-                    placeholder="O(n)"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-gray-300 mb-2">
-                    Space Complexity
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.spaceComplexity}
-                    onChange={(e) =>
-                      updateFormData("spaceComplexity", e.target.value)
-                    }
-                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
-                    placeholder="O(n)"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Tags */}
-              <div>
-                <label className="block text-gray-300 mb-2">Tags</label>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {formData.tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm flex items-center space-x-2"
-                    >
-                      <span>{tag}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeTag(index, "tags")}
-                        className="text-purple-300 hover:text-white"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
-                <input
-                  type="text"
-                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
-                  placeholder="Add tag and press Enter"
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addTag((e.target as HTMLInputElement).value, "tags");
-                      (e.target as HTMLInputElement).value = "";
-                    }
-                  }}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* LLD Tab */}
-          {currentTab === "lld" && (
-            <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 space-y-6">
-              <h2 className="text-2xl font-bold text-purple-400 mb-6">
-                🎨 Low Level Design
-              </h2>
-
-              <div>
-                <label className="block text-gray-300 mb-2">LLD Question</label>
-                <textarea
-                  value={formData.lldQuestion}
-                  onChange={(e) =>
-                    updateFormData("lldQuestion", e.target.value)
-                  }
-                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white h-32"
-                  placeholder="Design a shopping cart component that finds products matching user's budget constraints..."
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-300 mb-2">LLD Approach</label>
-                <textarea
-                  value={formData.lldApproach}
-                  onChange={(e) =>
-                    updateFormData("lldApproach", e.target.value)
-                  }
-                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white h-40"
-                  placeholder="We can use the Two Sum algorithm to efficiently find product combinations that fit within the user's budget..."
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-300 mb-2">
-                  LLD Code Example
-                </label>
-                <textarea
-                  value={formData.lldCodeExample}
-                  onChange={(e) =>
-                    updateFormData("lldCodeExample", e.target.value)
-                  }
-                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white h-48 font-mono text-sm"
-                  placeholder="interface Product { id: string; price: number; name: string; }..."
-                  required
-                />
-              </div>
-
-              {/* LLD Tech Stack */}
-              <div>
-                <label className="block text-gray-300 mb-2">Tech Stack</label>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {formData.lldTechStack.map((tech, index) => (
-                    <span
-                      key={index}
-                      className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm flex items-center space-x-2"
-                    >
-                      <span>{tech}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeTag(index, "lldTechStack")}
-                        className="text-blue-300 hover:text-white"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
-                <input
-                  type="text"
-                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
-                  placeholder="React, TypeScript, etc."
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addTag(
-                        (e.target as HTMLInputElement).value,
-                        "lldTechStack"
-                      );
-                      (e.target as HTMLInputElement).value = "";
-                    }
-                  }}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* HLD Tab */}
-          {currentTab === "hld" && (
-            <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 space-y-6">
-              <h2 className="text-2xl font-bold text-green-400 mb-6">
-                ⚙️ High Level Design
-              </h2>
-
-              <div>
-                <label className="block text-gray-300 mb-2">HLD Question</label>
-                <textarea
-                  value={formData.hldQuestion}
-                  onChange={(e) =>
-                    updateFormData("hldQuestion", e.target.value)
-                  }
-                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white h-32"
-                  placeholder="Design a user matching API that pairs users with complementary skills..."
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-300 mb-2">HLD Approach</label>
-                <textarea
-                  value={formData.hldApproach}
-                  onChange={(e) =>
-                    updateFormData("hldApproach", e.target.value)
-                  }
-                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white h-40"
-                  placeholder="We can apply the Two Sum pattern to match users by storing required skills in a hash map..."
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-300 mb-2">Architecture</label>
-                <input
-                  type="text"
-                  value={formData.hldArchitecture}
-                  onChange={(e) =>
-                    updateFormData("hldArchitecture", e.target.value)
-                  }
-                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
-                  placeholder="Microservices with Redis Cache"
-                  required
-                />
-              </div>
-
-              {/* HLD Tech Stack */}
-              <div>
-                <label className="block text-gray-300 mb-2">Tech Stack</label>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {formData.hldTechStack.map((tech, index) => (
-                    <span
-                      key={index}
-                      className="bg-green-500/20 text-green-300 px-3 py-1 rounded-full text-sm flex items-center space-x-2"
-                    >
-                      <span>{tech}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeTag(index, "hldTechStack")}
-                        className="text-green-300 hover:text-white"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
-                <input
-                  type="text"
-                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
-                  placeholder="Node.js, Redis, PostgreSQL, etc."
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addTag(
-                        (e.target as HTMLInputElement).value,
-                        "hldTechStack"
-                      );
-                      (e.target as HTMLInputElement).value = "";
-                    }
-                  }}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* System Design Tab */}
-          {currentTab === "system" && (
-            <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 space-y-6">
-              <h2 className="text-2xl font-bold text-orange-400 mb-6">
-                🏗️ System Design
-              </h2>
-
-              <div>
-                <label className="block text-gray-300 mb-2">
-                  System Design Question
-                </label>
-                <textarea
-                  value={formData.systemDesignQuestion}
-                  onChange={(e) =>
-                    updateFormData("systemDesignQuestion", e.target.value)
-                  }
-                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white h-32"
-                  placeholder="Design a load balancer that distributes requests across server pairs efficiently..."
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-300 mb-2">
-                  System Design Approach
-                </label>
-                <textarea
-                  value={formData.systemDesignApproach}
-                  onChange={(e) =>
-                    updateFormData("systemDesignApproach", e.target.value)
-                  }
-                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white h-40"
-                  placeholder="Using the Two Sum concept, we can implement consistent hashing to pair requests with optimal server combinations..."
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-300 mb-2">
-                  System Diagram (URL or Description)
-                </label>
-                <input
-                  type="text"
-                  value={formData.systemDesignDiagram}
-                  onChange={(e) =>
-                    updateFormData("systemDesignDiagram", e.target.value)
-                  }
-                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
-                  placeholder="https://example.com/diagram.png or describe the architecture"
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-300 mb-2">
-                  Scaling Considerations
-                </label>
-                <textarea
-                  value={formData.scalingConsiderations}
-                  onChange={(e) =>
-                    updateFormData("scalingConsiderations", e.target.value)
-                  }
-                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white h-32"
-                  placeholder="How this system scales to millions of users, potential bottlenecks, and optimization strategies..."
-                  required
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Submit Button */}
-          <div className="text-center">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-12 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? "Saving..." : "Save Problem"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
+<file path="public/vercel.svg">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 283 64"><path fill="black" d="M141 16c-11 0-19 7-19 18s9 18 20 18c7 0 13-3 16-7l-7-5c-2 3-6 4-9 4-5 0-9-3-10-7h28v-3c0-11-8-18-19-18zm-9 15c1-4 4-7 9-7s8 3 9 7h-18zm117-15c-11 0-19 7-19 18s9 18 20 18c6 0 12-3 16-7l-8-5c-2 3-5 4-8 4-5 0-9-3-11-7h28l1-3c0-11-8-18-19-18zm-10 15c2-4 5-7 10-7s8 3 9 7h-19zm-39 3c0 6 4 10 10 10 4 0 7-2 9-5l8 5c-3 5-9 8-17 8-11 0-19-7-19-18s8-18 19-18c8 0 14 3 17 8l-8 5c-2-3-5-5-9-5-6 0-10 4-10 10zm83-29v46h-9V5h9zM37 0l37 64H0L37 0zm92 5-27 48L74 5h10l18 30 17-30h10zm59 12v10l-3-1c-6 0-10 4-10 10v15h-9V17h9v9c0-5 6-9 13-9z"/></svg>
 </file>
 
 <file path="src/app/admin/page.tsx">
@@ -749,31 +249,1100 @@ export default function AdminLogin() {
 }
 </file>
 
-<file path="src/app/api/auth/login/route.ts">
-import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+<file path="src/app/anki/page.tsx">
+"use client";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-const ADMIN_PASSWORD = 'your-super-secret-password-123'; // Change this!
+interface Problem {
+  id: string;
+  leetcodeNumber: number;
+  title: string;
+  difficulty: string;
+  description: string;
+  solution: string;
+}
 
-export async function POST(request: Request) {
-  const { password } = await request.json();
+interface ReviewData {
+  problemId: string;
+  lastReviewed: string;
+  nextReview: string;
+  interval: number;
+  repetitions: number;
+  easeFactor: number;
+}
 
-  if (password === ADMIN_PASSWORD) {
-    const cookieStore = cookies();
-    cookieStore.set('admin-auth', 'authenticated', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-    });
+export default function AnkiReviewPage() {
+  const [problems, setProblems] = useState<Problem[]>([]);
+  const [dueReviews, setDueReviews] = useState<ReviewData[]>([]);
+  const [currentProblem, setCurrentProblem] = useState<Problem | null>(null);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-    return NextResponse.json({ success: true });
+  useEffect(() => {
+    fetchDueReviews();
+  }, []);
+
+  const fetchDueReviews = async () => {
+    try {
+      // Fetch all problems
+      const problemsRes = await fetch("/api/problems");
+      const problemsData = await problemsRes.json();
+      setProblems(problemsData.problems || []);
+
+      // Fetch reviews
+      const reviewsRes = await fetch("/api/reviews");
+      const reviewsData = await reviewsRes.json();
+      setDueReviews(reviewsData.dueReviews || []);
+
+      // Set first due problem
+      if (
+        reviewsData.dueReviews?.length > 0 &&
+        problemsData.problems?.length > 0
+      ) {
+        const firstDueProblem = problemsData.problems.find(
+          (p: Problem) => p.id === reviewsData.dueReviews[0].problemId
+        );
+        setCurrentProblem(firstDueProblem || null);
+      }
+    } catch (error) {
+      console.error("Failed to fetch reviews:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReview = async (quality: 0 | 1 | 2 | 3 | 4 | 5) => {
+    if (!currentProblem) return;
+
+    try {
+      await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          problemId: currentProblem.id,
+          quality,
+        }),
+      });
+
+      // Move to next problem
+      const remainingReviews = dueReviews.filter(
+        (r) => r.problemId !== currentProblem.id
+      );
+      setDueReviews(remainingReviews);
+
+      if (remainingReviews.length > 0) {
+        const nextProblem = problems.find(
+          (p) => p.id === remainingReviews[0].problemId
+        );
+        setCurrentProblem(nextProblem || null);
+        setShowAnswer(false);
+      } else {
+        setCurrentProblem(null);
+      }
+    } catch (error) {
+      console.error("Failed to save review:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-xl">Loading reviews...</div>
+      </div>
+    );
   }
 
-  return NextResponse.json({ error: 'Invalid password' }, { status: 401 });
+  if (!currentProblem) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">🎉</div>
+          <h1 className="text-3xl font-bold text-white mb-4">All caught up!</h1>
+          <p className="text-gray-400 mb-8">
+            No problems due for review right now.
+          </p>
+          <Link
+            href="/problems"
+            className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-all duration-300"
+          >
+            Browse Problems
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-black text-white">
+      {/* Header */}
+      <div className="bg-white/5 backdrop-blur-xl border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                Anki Review Mode
+              </h1>
+              <p className="text-gray-400 mt-2">
+                {dueReviews.length} problems due for review
+              </p>
+            </div>
+            <Link
+              href="/"
+              className="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl transition-all duration-300"
+            >
+              Exit Review
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Progress Bar */}
+        <div className="mb-8">
+          <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-purple-600 to-blue-600 transition-all duration-500"
+              style={{
+                width: `${
+                  ((problems.length - dueReviews.length) / problems.length) *
+                  100
+                }%`,
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Problem Card */}
+        <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8">
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm font-mono text-gray-400">
+                #{currentProblem.leetcodeNumber}
+              </span>
+              <span
+                className={`text-xs px-3 py-1 rounded-full ${
+                  currentProblem.difficulty === "Easy"
+                    ? "bg-green-500/20 text-green-300"
+                    : currentProblem.difficulty === "Medium"
+                    ? "bg-yellow-500/20 text-yellow-300"
+                    : "bg-red-500/20 text-red-300"
+                }`}
+              >
+                {currentProblem.difficulty}
+              </span>
+            </div>
+            <h2 className="text-2xl font-bold mb-4">{currentProblem.title}</h2>
+            <p className="text-gray-300 leading-relaxed">
+              {currentProblem.description}
+            </p>
+          </div>
+
+          {!showAnswer ? (
+            <button
+              onClick={() => setShowAnswer(true)}
+              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-xl font-semibold hover:scale-105 transition-all duration-300"
+            >
+              Show Solution
+            </button>
+          ) : (
+            <div>
+              <div className="bg-gray-900 rounded-2xl p-6 mb-6 font-mono">
+                <pre className="text-green-300 text-sm overflow-x-auto whitespace-pre-wrap">
+                  {currentProblem.solution}
+                </pre>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-center mb-4">
+                  How difficult was this?
+                </h3>
+                <div className="grid grid-cols-4 gap-3">
+                  <button
+                    onClick={() => handleReview(1)}
+                    className="bg-red-500/20 hover:bg-red-500/30 text-red-300 py-3 rounded-xl transition-all duration-300"
+                  >
+                    Again
+                  </button>
+                  <button
+                    onClick={() => handleReview(2)}
+                    className="bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 py-3 rounded-xl transition-all duration-300"
+                  >
+                    Hard
+                  </button>
+                  <button
+                    onClick={() => handleReview(4)}
+                    className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 py-3 rounded-xl transition-all duration-300"
+                  >
+                    Good
+                  </button>
+                  <button
+                    onClick={() => handleReview(5)}
+                    className="bg-green-500/20 hover:bg-green-500/30 text-green-300 py-3 rounded-xl transition-all duration-300"
+                  >
+                    Easy
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 </file>
 
-<file path="src/app/api/problems/[id]/page.tsx">
+<file path="src/app/api/blogs/route.ts">
+import { NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabaseClient';
+
+
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const category = searchParams.get('category');
+    const limit = searchParams.get('limit');
+
+    const { data, error } = await supabaseAdmin
+      .from('blogs')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    let blogs = data || [];
+
+    // Filter by category if specified
+    if (category) {
+      blogs = blogs.filter(blog => blog.category === category);
+    }
+
+    // Limit results if specified
+    if (limit) {
+      blogs = blogs.slice(0, parseInt(limit));
+    }
+
+    return NextResponse.json({ blogs });
+
+  } catch (error) {
+    console.error('Error fetching blogs:', error);
+    return NextResponse.json({ error: 'Failed to fetch blogs' }, { status: 500 });
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const blogData = await request.json();
+    
+    const timestamp = new Date().toISOString();
+    const blogId = `blog-${Date.now()}`;
+
+    const { error } = await supabaseAdmin.from('blogs').insert({
+      id: blogId,
+      title: blogData.title,
+      category: blogData.category,
+      content: blogData.content,
+      tags: blogData.tags,
+      key_takeaways: blogData.keyTakeaways,
+      related_problems: blogData.relatedProblems,
+      created_at: timestamp,
+      updated_at: timestamp
+    });
+
+    if (error) throw error;
+
+    return NextResponse.json({
+      success: true,
+      blogId,
+      message: 'Blog saved successfully!'
+    });
+
+  } catch (error) {
+    console.error('Error saving blog:', error);
+    return NextResponse.json({ error: 'Failed to save blog' }, { status: 500 });
+  }
+}
+</file>
+
+<file path="src/app/api/github/commit/route.ts">
+import { NextResponse } from 'next/server';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+import path from 'path';
+
+const execAsync = promisify(exec);
+
+export async function POST(request: Request) {
+  try {
+    const { problemData } = await request.json();
+    
+    // Get the project root directory
+    const projectRoot = process.cwd();
+    
+    // Git commands
+    const commands = [
+      'git add data/problems/*',
+      `git commit -m "Add problem: ${problemData.title} (#${problemData.leetcodeNumber})"`,
+      'git push origin main'
+    ];
+
+    // Execute git commands
+    for (const command of commands) {
+      try {
+        const { stdout, stderr } = await execAsync(command, { cwd: projectRoot });
+        console.log(`Command: ${command}`);
+        console.log(`Output: ${stdout}`);
+        if (stderr) console.error(`Error: ${stderr}`);
+      } catch (error: any) {
+        console.error(`Failed to execute: ${command}`, error.message);
+        // Continue even if one command fails (e.g., nothing to commit)
+      }
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Changes committed and pushed to GitHub' 
+    });
+
+  } catch (error) {
+    console.error('GitHub commit error:', error);
+    return NextResponse.json(
+      { error: 'Failed to commit to GitHub' }, 
+      { status: 500 }
+    );
+  }
+}
+</file>
+
+<file path="src/app/api/reviews/route.ts">
+import { NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabaseClient';
+
+
+export interface ReviewData {
+  problemId: string;
+  lastReviewed: string;
+  nextReview: string;
+  interval: number; // days
+  repetitions: number;
+  easeFactor: number;
+  difficulty: 'Again' | 'Hard' | 'Good' | 'Easy';
+}
+
+// SuperMemo 2 algorithm
+function calculateNextReview(review: ReviewData, quality: 0 | 1 | 2 | 3 | 4 | 5) {
+  let { interval, repetitions, easeFactor } = review;
+
+  if (quality >= 3) {
+    if (repetitions === 0) {
+      interval = 1;
+    } else if (repetitions === 1) {
+      interval = 6;
+    } else {
+      interval = Math.round(interval * easeFactor);
+    }
+    repetitions += 1;
+  } else {
+    repetitions = 0;
+    interval = 1;
+  }
+
+  easeFactor = Math.max(1.3, easeFactor + 0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+
+  const nextReview = new Date();
+  nextReview.setDate(nextReview.getDate() + interval);
+
+  return {
+    interval,
+    repetitions,
+    easeFactor,
+    nextReview: nextReview.toISOString(),
+    lastReviewed: new Date().toISOString()
+  };
+}
+
+export async function POST(request: Request) {
+  try {
+    const { problemId, quality } = await request.json();
+    
+    const { data: existing } = await supabaseAdmin
+      .from('reviews')
+      .select('*')
+      .eq('problem_id', problemId)
+      .maybeSingle();
+
+    let reviewData: ReviewData = existing || {
+      problemId,
+      lastReviewed: new Date().toISOString(),
+      nextReview: new Date().toISOString(),
+      interval: 0,
+      repetitions: 0,
+      easeFactor: 2.5,
+      difficulty: 'Good'
+    };
+
+    const updated = calculateNextReview(reviewData, quality);
+    reviewData = { ...reviewData, ...updated };
+
+    const { error } = await supabaseAdmin
+      .from('reviews')
+      .upsert({
+        problem_id: reviewData.problemId,
+        last_reviewed: reviewData.lastReviewed,
+        next_review: reviewData.nextReview,
+        interval: reviewData.interval,
+        repetitions: reviewData.repetitions,
+        ease_factor: reviewData.easeFactor,
+        difficulty: reviewData.difficulty
+      });
+
+    if (error) throw error;
+
+    return NextResponse.json({ success: true, reviewData });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to save review' }, { status: 500 });
+  }
+}
+
+export async function GET() {
+  try {
+    const { data, error } = await supabaseAdmin.from('reviews').select('*');
+
+    if (error) throw error;
+
+    const reviews = data || [];
+
+    const now = new Date();
+    const dueReviews = reviews.filter(r => new Date(r.next_review) <= now);
+
+    return NextResponse.json({
+      reviews,
+      dueReviews,
+      totalReviews: reviews.length,
+      dueCount: dueReviews.length
+    });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to fetch reviews' }, { status: 500 });
+  }
+}
+</file>
+
+<file path="src/app/blogs/[id]/page.tsx">
+"use client";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+
+interface BlogPost {
+  id: string;
+  title: string;
+  category: "ml-platform" | "distributed-systems" | "recommendation-systems";
+  content: string;
+  tags: string[];
+  keyTakeaways: string[];
+  relatedProblems: string[];
+  createdAt: string;
+}
+
+export default function BlogDetailPage() {
+  const params = useParams();
+  const [blog, setBlog] = useState<BlogPost | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchBlog();
+  }, [params.id]);
+
+  const fetchBlog = async () => {
+    try {
+      const response = await fetch("/api/blogs");
+      const data = await response.json();
+      const foundBlog = data.blogs?.find((b: BlogPost) => b.id === params.id);
+      setBlog(foundBlog || null);
+    } catch (error) {
+      console.error("Failed to fetch blog:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const categoryConfig = {
+    "ml-platform": {
+      name: "ML Platform & MLOps",
+      gradient: "from-orange-400 to-red-400",
+      bg: "bg-orange-500/20",
+      icon: "🤖",
+    },
+    "distributed-systems": {
+      name: "Distributed Systems",
+      gradient: "from-blue-400 to-indigo-400",
+      bg: "bg-blue-500/20",
+      icon: "🌐",
+    },
+    "recommendation-systems": {
+      name: "Recommendation Systems",
+      gradient: "from-green-400 to-teal-400",
+      bg: "bg-green-500/20",
+      icon: "🎯",
+    },
+  };
+
+  const renderContent = (content: string) => {
+    // Simple markdown-like rendering
+    return content.split("\n").map((paragraph, index) => {
+      if (paragraph.startsWith("## ")) {
+        return (
+          <h2 key={index} className="text-2xl font-bold text-white mt-8 mb-4">
+            {paragraph.substring(3)}
+          </h2>
+        );
+      } else if (paragraph.startsWith("### ")) {
+        return (
+          <h3
+            key={index}
+            className="text-xl font-semibold text-gray-200 mt-6 mb-3"
+          >
+            {paragraph.substring(4)}
+          </h3>
+        );
+      } else if (paragraph.startsWith("```")) {
+        return null; // Skip code fence markers
+      } else if (paragraph.trim()) {
+        return (
+          <p key={index} className="text-gray-300 mb-4 leading-relaxed">
+            {paragraph}
+          </p>
+        );
+      }
+      return null;
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-xl">Loading blog...</div>
+      </div>
+    );
+  }
+
+  if (!blog) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">😵</div>
+          <h1 className="text-2xl font-bold text-white mb-4">Blog Not Found</h1>
+          <Link
+            href="/blogs"
+            className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-all duration-300"
+          >
+            ← Back to Blogs
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const config = categoryConfig[blog.category];
+
+  return (
+    <div className="min-h-screen bg-black text-white">
+      {/* Header */}
+      <div className="bg-white/5 backdrop-blur-xl border-b border-white/10">
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <div className="flex items-center justify-between mb-6">
+            <Link
+              href="/blogs"
+              className="text-gray-400 hover:text-white transition-colors flex items-center space-x-2"
+            >
+              <span>←</span>
+              <span>Back to Blogs</span>
+            </Link>
+            <div className="flex items-center space-x-4">
+              <span className="text-4xl">{config.icon}</span>
+              <span className={`${config.bg} text-sm px-3 py-1 rounded-full`}>
+                {config.name}
+              </span>
+            </div>
+          </div>
+          <h1
+            className={`text-4xl md:text-5xl font-bold bg-gradient-to-r ${config.gradient} bg-clip-text text-transparent mb-4`}
+          >
+            {blog.title}
+          </h1>
+          <div className="flex items-center space-x-4 text-gray-400">
+            <span>
+              Published on{" "}
+              {new Date(blog.createdAt).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </span>
+            <span>•</span>
+            <span>{blog.content.split(" ").length} words</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-4 py-12">
+        {/* Key Takeaways Box */}
+        {blog.keyTakeaways.length > 0 && (
+          <div className="bg-gradient-to-r from-purple-600/10 to-blue-600/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 mb-12">
+            <h3 className="text-lg font-semibold text-purple-400 mb-4">
+              🎯 Key Takeaways
+            </h3>
+            <ul className="space-y-2">
+              {blog.keyTakeaways.map((takeaway, index) => (
+                <li key={index} className="flex items-start text-gray-300">
+                  <span className="text-green-400 mr-3 mt-1">✓</span>
+                  <span>{takeaway}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Blog Content */}
+        <article className="prose prose-invert max-w-none">
+          {renderContent(blog.content)}
+        </article>
+
+        {/* Tags */}
+        <div className="mt-12 pt-8 border-t border-white/10">
+          <h3 className="text-lg font-semibold text-gray-300 mb-4">Tags</h3>
+          <div className="flex flex-wrap gap-2">
+            {blog.tags.map((tag, index) => (
+              <span
+                key={index}
+                className="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Related Problems */}
+        {blog.relatedProblems.length > 0 && (
+          <div className="mt-8">
+            <h3 className="text-lg font-semibold text-gray-300 mb-4">
+              Related LeetCode Problems
+            </h3>
+            <div className="space-y-3">
+              {blog.relatedProblems.map((problem, index) => (
+                <Link
+                  key={index}
+                  href="/problems"
+                  className="block bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-4 transition-all"
+                >
+                  <span className="text-blue-400">→ {problem}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* CTA Section */}
+        <div className="mt-16 bg-gradient-to-r from-purple-600/20 to-blue-600/20 backdrop-blur-xl border border-white/20 rounded-3xl p-8 text-center">
+          <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+            Found this helpful?
+          </h3>
+          <p className="text-gray-300 mb-6">
+            I&apos;m actively seeking opportunities in{" "}
+            {config.name.toLowerCase()}.
+          </p>
+
+          <a
+            href="mailto:mithileshbade98@gmail.com"
+            className="inline-block bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-3 rounded-xl font-semibold hover:scale-105 transition-all"
+          >
+            📧 Let&apos;s Connect
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/app/blogs/page.tsx">
+"use client";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+
+interface BlogPost {
+  id: string;
+  title: string;
+  category: "ml-platform" | "distributed-systems" | "recommendation-systems";
+  content: string;
+  tags: string[];
+  keyTakeaways: string[];
+  relatedProblems: string[];
+  createdAt: string;
+}
+
+export default function BlogsPage() {
+  const searchParams = useSearchParams();
+  const categoryFilter = searchParams.get("category");
+
+  const [blogs, setBlogs] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    categoryFilter || "all"
+  );
+
+  useEffect(() => {
+    fetchBlogs();
+  }, []);
+
+  const fetchBlogs = async () => {
+    try {
+      const response = await fetch("/api/blogs");
+      const data = await response.json();
+      setBlogs(data.blogs || []);
+    } catch (error) {
+      console.error("Failed to fetch blogs:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const categoryConfig = {
+    "ml-platform": {
+      name: "ML Platform & MLOps",
+      gradient: "from-orange-400 to-red-400",
+      bg: "bg-orange-500/20",
+      border: "border-orange-500/30",
+      icon: "🤖",
+      description: "Machine Learning infrastructure, pipelines, and operations",
+    },
+    "distributed-systems": {
+      name: "Distributed Systems",
+      gradient: "from-blue-400 to-indigo-400",
+      bg: "bg-blue-500/20",
+      border: "border-blue-500/30",
+      icon: "🌐",
+      description: "Scalability, reliability, and distributed computing",
+    },
+    "recommendation-systems": {
+      name: "Recommendation Systems",
+      gradient: "from-green-400 to-teal-400",
+      bg: "bg-green-500/20",
+      border: "border-green-500/30",
+      icon: "🎯",
+      description: "Personalization, ranking, and recommendation algorithms",
+    },
+  };
+
+  const filteredBlogs =
+    selectedCategory === "all"
+      ? blogs
+      : blogs.filter((blog) => blog.category === selectedCategory);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-xl">Loading blogs...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-black text-white">
+      {/* Header */}
+      <div className="bg-white/5 backdrop-blur-xl border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                Technical Deep Dives
+              </h1>
+              <p className="text-gray-400 mt-2">
+                {blogs.length} articles on system design and engineering
+              </p>
+            </div>
+            <Link
+              href="/"
+              className="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl transition-all duration-300"
+            >
+              ← Back to Home
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Category Filters */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-300 mb-6">
+            Browse by Expertise
+          </h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            {Object.entries(categoryConfig).map(([key, config]) => (
+              <button
+                key={key}
+                onClick={() => setSelectedCategory(key)}
+                className={`group relative overflow-hidden rounded-3xl transition-all duration-500 ${
+                  selectedCategory === key ? "scale-105" : "hover:scale-105"
+                }`}
+              >
+                <div
+                  className={`absolute inset-0 bg-gradient-to-r ${config.gradient} opacity-10 group-hover:opacity-20`}
+                ></div>
+                <div
+                  className={`relative ${config.bg} backdrop-blur-xl border ${config.border} rounded-3xl p-8`}
+                >
+                  <div className="text-5xl mb-4">{config.icon}</div>
+                  <h3
+                    className={`text-xl font-bold mb-2 bg-gradient-to-r ${config.gradient} bg-clip-text text-transparent`}
+                  >
+                    {config.name}
+                  </h3>
+                  <p className="text-gray-400 text-sm mb-4">
+                    {config.description}
+                  </p>
+                  <div className="text-2xl font-bold text-white">
+                    {blogs.filter((b) => b.category === key).length} Articles
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          {/* Show All Button */}
+          <div className="text-center mt-6">
+            <button
+              onClick={() => setSelectedCategory("all")}
+              className={`px-6 py-3 rounded-xl font-semibold transition-all ${
+                selectedCategory === "all"
+                  ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white"
+                  : "bg-white/10 text-gray-400 hover:text-white hover:bg-white/20"
+              }`}
+            >
+              Show All Articles
+            </button>
+          </div>
+        </div>
+
+        {/* Blog Posts Grid */}
+        {filteredBlogs.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">📝</div>
+            <h2 className="text-2xl font-bold text-gray-400 mb-2">
+              No articles yet
+            </h2>
+            <p className="text-gray-500">
+              Check back soon for technical deep dives!
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-8">
+            {filteredBlogs.map((blog) => (
+              <Link key={blog.id} href={`/blogs/${blog.id}`}>
+                <article className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 hover:bg-white/10 hover:border-white/20 transition-all duration-500">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center space-x-4">
+                      <span className="text-4xl">
+                        {categoryConfig[blog.category].icon}
+                      </span>
+                      <div>
+                        <span
+                          className={`inline-block ${
+                            categoryConfig[blog.category].bg
+                          } text-sm px-3 py-1 rounded-full`}
+                        >
+                          {categoryConfig[blog.category].name}
+                        </span>
+                        <p className="text-sm text-gray-500 mt-1">
+                          {new Date(blog.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            }
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <h2 className="text-2xl font-bold mb-4 text-white group-hover:bg-gradient-to-r group-hover:from-purple-200 group-hover:to-blue-200 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
+                    {blog.title}
+                  </h2>
+
+                  <p className="text-gray-400 mb-6 line-clamp-3">
+                    {blog.content.substring(0, 200)}...
+                  </p>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap gap-2">
+                      {blog.tags.slice(0, 3).map((tag, index) => (
+                        <span
+                          key={index}
+                          className="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                      {blog.tags.length > 3 && (
+                        <span className="text-xs text-gray-500">
+                          +{blog.tags.length - 3} more
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center text-sm text-purple-400 group-hover:text-purple-300 transition-colors">
+                      <span>Read Full Article</span>
+                      <span className="ml-2 group-hover:translate-x-1 transition-transform duration-300">
+                        →
+                      </span>
+                    </div>
+                  </div>
+
+                  {blog.keyTakeaways.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                      <p className="text-sm text-gray-500 mb-2">
+                        Key Takeaways:
+                      </p>
+                      <ul className="text-sm text-gray-400 space-y-1">
+                        {blog.keyTakeaways
+                          .slice(0, 2)
+                          .map((takeaway, index) => (
+                            <li key={index} className="flex items-start">
+                              <span className="text-green-400 mr-2">✓</span>
+                              {takeaway}
+                            </li>
+                          ))}
+                      </ul>
+                    </div>
+                  )}
+                </article>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/app/components/StreakCalendar.tsx">
+"use client";
+import { useState, useEffect } from "react";
+
+interface DayData {
+  date: string;
+  count: number;
+}
+
+export default function StreakCalendar() {
+  const [calendarData, setCalendarData] = useState<DayData[]>([]);
+  const [hoveredDay, setHoveredDay] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchCalendarData();
+  }, []);
+
+  const fetchCalendarData = async () => {
+    try {
+      const response = await fetch("/api/checkin/calendar");
+      const data = await response.json();
+      setCalendarData(data.calendar || []);
+    } catch (error) {
+      console.error("Error fetching calendar data:", error);
+    }
+  };
+
+  const getIntensityClass = (count: number) => {
+    if (count === 0) return "bg-gray-800";
+    if (count <= 2) return "bg-green-900";
+    if (count <= 4) return "bg-green-700";
+    if (count <= 6) return "bg-green-500";
+    return "bg-green-400";
+  };
+
+  // Generate last 365 days
+  const generateCalendar = () => {
+    const calendar = [];
+    const today = new Date();
+
+    for (let i = 364; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split("T")[0];
+
+      const dayData = calendarData.find((d) => d.date === dateStr);
+      calendar.push({
+        date: dateStr,
+        count: dayData?.count || 0,
+        dayOfWeek: date.getDay(),
+      });
+    }
+
+    return calendar;
+  };
+
+  const calendar = generateCalendar();
+  const weeks = [];
+
+  // Group by weeks
+  for (let i = 0; i < calendar.length; i += 7) {
+    weeks.push(calendar.slice(i, i + 7));
+  }
+
+  return (
+    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 overflow-x-auto">
+      <div className="flex space-x-1">
+        {weeks.map((week, weekIndex) => (
+          <div key={weekIndex} className="flex flex-col space-y-1">
+            {week.map((day) => (
+              <div
+                key={day.date}
+                className={`w-3 h-3 rounded-sm cursor-pointer transition-all duration-200 hover:scale-125 ${getIntensityClass(
+                  day.count
+                )}`}
+                onMouseEnter={() => setHoveredDay(day.date)}
+                onMouseLeave={() => setHoveredDay(null)}
+                title={`${day.date}: ${day.count} activities`}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {hoveredDay && (
+        <div className="mt-4 text-sm text-gray-400">
+          {hoveredDay}:{" "}
+          {calendarData.find((d) => d.date === hoveredDay)?.count || 0}{" "}
+          activities
+        </div>
+      )}
+
+      <div className="mt-4 flex items-center justify-end space-x-2 text-xs text-gray-500">
+        <span>Less</span>
+        <div className="flex space-x-1">
+          {[0, 2, 4, 6, 8].map((level) => (
+            <div
+              key={level}
+              className={`w-3 h-3 rounded-sm ${getIntensityClass(level)}`}
+            />
+          ))}
+        </div>
+        <span>More</span>
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/app/problems/[id]/page.tsx">
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -1147,104 +1716,7 @@ export default function ProblemDetailPage() {
 }
 </file>
 
-<file path="src/app/api/problems/create/route.ts">
-import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import fs from 'fs';
-import path from 'path';
-
-// Simple file-based storage for now
-const PROBLEMS_DIR = path.join(process.cwd(), 'data', 'problems');
-
-// Ensure problems directory exists
-if (!fs.existsSync(PROBLEMS_DIR)) {
-  fs.mkdirSync(PROBLEMS_DIR, { recursive: true });
-}
-
-export async function POST(request: Request) {
-  try {
-    // Check admin authentication
-    const cookieStore = cookies();
-    const isAuthenticated = cookieStore.get('admin-auth')?.value === 'authenticated';
-    
-    if (!isAuthenticated) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const problemData = await request.json();
-    
-    // Add timestamp and generate ID
-    const timestamp = new Date().toISOString();
-    const problemId = `problem-${problemData.leetcodeNumber}-${Date.now()}`;
-    
-    const enrichedData = {
-      ...problemData,
-      id: problemId,
-      createdAt: timestamp,
-      updatedAt: timestamp
-    };
-
-    // Save to JSON file
-    const fileName = `${problemId}.json`;
-    const filePath = path.join(PROBLEMS_DIR, fileName);
-    
-    fs.writeFileSync(filePath, JSON.stringify(enrichedData, null, 2));
-    
-    console.log(`✅ Problem saved: ${fileName}`);
-    console.log('📁 Data location:', filePath);
-    
-    return NextResponse.json({ 
-      success: true, 
-      problemId,
-      message: 'Problem saved successfully!' 
-    });
-
-  } catch (error) {
-    console.error('❌ Error saving problem:', error);
-    return NextResponse.json(
-      { error: 'Failed to save problem' }, 
-      { status: 500 }
-    );
-  }
-}
-
-// Optional: GET endpoint to retrieve problems
-export async function GET() {
-  try {
-    const cookieStore = cookies();
-    const isAuthenticated = cookieStore.get('admin-auth')?.value === 'authenticated';
-    
-    if (!isAuthenticated) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    if (!fs.existsSync(PROBLEMS_DIR)) {
-      return NextResponse.json({ problems: [] });
-    }
-
-    const files = fs.readdirSync(PROBLEMS_DIR);
-    const problems = files
-      .filter(file => file.endsWith('.json'))
-      .map(file => {
-        const filePath = path.join(PROBLEMS_DIR, file);
-        const content = fs.readFileSync(filePath, 'utf-8');
-        return JSON.parse(content);
-      })
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-    return NextResponse.json({ problems });
-
-  } catch (error) {
-    console.error('❌ Error fetching problems:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch problems' }, 
-      { status: 500 }
-    );
-  }
-}
-</file>
-
-<file path="src/app/api/problems/page.tsx">
+<file path="src/app/problems/page.tsx">
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -1448,30 +1920,2173 @@ export default function ProblemsPage() {
 }
 </file>
 
-<file path="src/app/api/problems/route.ts">
-import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+<file path="src/app/problems/repomix-output.xml">
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
 
-const PROBLEMS_DIR = path.join(process.cwd(), 'data', 'problems');
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+[id]/
+  page.tsx
+page.tsx
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="[id]/page.tsx">
+"use client";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+
+interface Problem {
+  id: string;
+  leetcodeNumber: number;
+  title: string;
+  difficulty: "Easy" | "Medium" | "Hard";
+  description: string;
+  solution: string;
+  timeComplexity: string;
+  spaceComplexity: string;
+  tags: string[];
+  lldQuestion: string;
+  lldApproach: string;
+  lldTechStack: string[];
+  lldCodeExample: string;
+  hldQuestion: string;
+  hldApproach: string;
+  hldTechStack: string[];
+  hldArchitecture: string;
+  systemDesignQuestion: string;
+  systemDesignApproach: string;
+  systemDesignDiagram: string;
+  scalingConsiderations: string;
+  createdAt: string;
+}
+
+export default function ProblemDetailPage() {
+  const params = useParams();
+  const [problem, setProblem] = useState<Problem | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("leetcode");
+
+  useEffect(() => {
+    fetchProblem();
+  }, [params.id]);
+
+  const fetchProblem = async () => {
+    try {
+      const response = await fetch("/api/problems");
+      const data = await response.json();
+      const foundProblem = data.problems?.find(
+        (p: Problem) => p.id === params.id
+      );
+      setProblem(foundProblem || null);
+    } catch (error) {
+      console.error("Failed to fetch problem:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case "Easy":
+        return "from-green-400 to-emerald-400";
+      case "Medium":
+        return "from-yellow-400 to-orange-400";
+      case "Hard":
+        return "from-red-400 to-pink-400";
+      default:
+        return "from-gray-400 to-gray-500";
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-xl">Loading problem...</div>
+      </div>
+    );
+  }
+
+  if (!problem) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">😵</div>
+          <h1 className="text-2xl font-bold text-white mb-4">
+            Problem Not Found
+          </h1>
+          <Link
+            href="/problems"
+            className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-all duration-300"
+          >
+            ← Back to Problems
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const tabs = [
+    { id: "leetcode", label: "Algorithm", icon: "🧮" },
+    { id: "lld", label: "Frontend Design", icon: "🎨" },
+    { id: "hld", label: "Backend Design", icon: "⚙️" },
+    { id: "system", label: "System Design", icon: "🏗️" },
+  ];
+
+  return (
+    <div className="min-h-screen bg-black text-white">
+      {/* Header */}
+      <div className="bg-white/5 backdrop-blur-xl border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="flex items-center justify-between mb-4">
+            <Link
+              href="/problems"
+              className="text-gray-400 hover:text-white transition-colors flex items-center space-x-2"
+            >
+              <span>←</span>
+              <span>Back to Problems</span>
+            </Link>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm font-mono text-gray-400 bg-white/10 px-3 py-1 rounded-full">
+                #{problem.leetcodeNumber}
+              </span>
+              <span
+                className={`text-xs font-semibold px-3 py-1 rounded-full bg-gradient-to-r ${getDifficultyColor(
+                  problem.difficulty
+                )} text-black`}
+              >
+                {problem.difficulty.toUpperCase()}
+              </span>
+            </div>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+            {problem.title}
+          </h1>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Tab Navigation */}
+        <div className="flex flex-wrap gap-2 mb-8">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center space-x-2 px-4 py-3 rounded-xl transition-all duration-300 ${
+                activeTab === tab.id
+                  ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white"
+                  : "bg-white/5 text-gray-400 hover:text-white hover:bg-white/10"
+              }`}
+            >
+              <span>{tab.icon}</span>
+              <span className="hidden sm:block">{tab.label}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Content */}
+        <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8">
+          {activeTab === "leetcode" && (
+            <div className="space-y-8">
+              <div>
+                <h2 className="text-2xl font-bold text-purple-400 mb-4">
+                  🧮 Algorithm Problem
+                </h2>
+                <div className="bg-white/5 rounded-2xl p-6">
+                  <h3 className="text-lg font-semibold text-white mb-3">
+                    Problem Description
+                  </h3>
+                  <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
+                    {problem.description}
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-3">
+                  Solution
+                </h3>
+                <div className="bg-gray-900 rounded-2xl p-6 font-mono">
+                  <pre className="text-green-300 text-sm overflow-x-auto whitespace-pre-wrap">
+                    {problem.solution}
+                  </pre>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-white/5 rounded-2xl p-6">
+                  <h3 className="text-lg font-semibold text-white mb-2">
+                    Time Complexity
+                  </h3>
+                  <p className="text-green-400 font-mono text-xl">
+                    {problem.timeComplexity}
+                  </p>
+                </div>
+                <div className="bg-white/5 rounded-2xl p-6">
+                  <h3 className="text-lg font-semibold text-white mb-2">
+                    Space Complexity
+                  </h3>
+                  <p className="text-blue-400 font-mono text-xl">
+                    {problem.spaceComplexity}
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-3">Tags</h3>
+                <div className="flex flex-wrap gap-2">
+                  {problem.tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "lld" && (
+            <div className="space-y-8">
+              <h2 className="text-2xl font-bold text-purple-400 mb-4">
+                🎨 Frontend Design Application
+              </h2>
+
+              <div className="bg-white/5 rounded-2xl p-6">
+                <h3 className="text-lg font-semibold text-white mb-3">
+                  Design Challenge
+                </h3>
+                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
+                  {problem.lldQuestion}
+                </p>
+              </div>
+
+              <div className="bg-white/5 rounded-2xl p-6">
+                <h3 className="text-lg font-semibold text-white mb-3">
+                  Approach
+                </h3>
+                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
+                  {problem.lldApproach}
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-3">
+                  Implementation
+                </h3>
+                <div className="bg-gray-900 rounded-2xl p-6 font-mono">
+                  <pre className="text-green-300 text-sm overflow-x-auto whitespace-pre-wrap">
+                    {problem.lldCodeExample}
+                  </pre>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-3">
+                  Tech Stack
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {problem.lldTechStack.map((tech, index) => (
+                    <span
+                      key={index}
+                      className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "hld" && (
+            <div className="space-y-8">
+              <h2 className="text-2xl font-bold text-green-400 mb-4">
+                ⚙️ Backend Design Application
+              </h2>
+
+              <div className="bg-white/5 rounded-2xl p-6">
+                <h3 className="text-lg font-semibold text-white mb-3">
+                  System Challenge
+                </h3>
+                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
+                  {problem.hldQuestion}
+                </p>
+              </div>
+
+              <div className="bg-white/5 rounded-2xl p-6">
+                <h3 className="text-lg font-semibold text-white mb-3">
+                  Approach
+                </h3>
+                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
+                  {problem.hldApproach}
+                </p>
+              </div>
+
+              <div className="bg-white/5 rounded-2xl p-6">
+                <h3 className="text-lg font-semibold text-white mb-3">
+                  Architecture
+                </h3>
+                <p className="text-gray-300 leading-relaxed">
+                  {problem.hldArchitecture}
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-3">
+                  Tech Stack
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {problem.hldTechStack.map((tech, index) => (
+                    <span
+                      key={index}
+                      className="bg-green-500/20 text-green-300 px-3 py-1 rounded-full text-sm"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "system" && (
+            <div className="space-y-8">
+              <h2 className="text-2xl font-bold text-orange-400 mb-4">
+                🏗️ Large Scale System Design
+              </h2>
+
+              <div className="bg-white/5 rounded-2xl p-6">
+                <h3 className="text-lg font-semibold text-white mb-3">
+                  System Design Challenge
+                </h3>
+                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
+                  {problem.systemDesignQuestion}
+                </p>
+              </div>
+
+              <div className="bg-white/5 rounded-2xl p-6">
+                <h3 className="text-lg font-semibold text-white mb-3">
+                  Design Approach
+                </h3>
+                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
+                  {problem.systemDesignApproach}
+                </p>
+              </div>
+
+              {problem.systemDesignDiagram && (
+                <div className="bg-white/5 rounded-2xl p-6">
+                  <h3 className="text-lg font-semibold text-white mb-3">
+                    System Architecture
+                  </h3>
+                  <p className="text-gray-300 leading-relaxed">
+                    {problem.systemDesignDiagram}
+                  </p>
+                </div>
+              )}
+
+              <div className="bg-white/5 rounded-2xl p-6">
+                <h3 className="text-lg font-semibold text-white mb-3">
+                  Scaling Considerations
+                </h3>
+                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
+                  {problem.scalingConsiderations}
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="page.tsx">
+"use client";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+
+interface Problem {
+  id: string;
+  leetcodeNumber: number;
+  title: string;
+  difficulty: "Easy" | "Medium" | "Hard";
+  description: string;
+  tags: string[];
+  createdAt: string;
+}
+
+export default function ProblemsPage() {
+  const [problems, setProblems] = useState<Problem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<"All" | "Easy" | "Medium" | "Hard">(
+    "All"
+  );
+
+  useEffect(() => {
+    fetchProblems();
+  }, []);
+
+  const fetchProblems = async () => {
+    try {
+      const response = await fetch("/api/problems");
+      const data = await response.json();
+      setProblems(data.problems || []);
+    } catch (error) {
+      console.error("Failed to fetch problems:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredProblems = problems.filter(
+    (problem) => filter === "All" || problem.difficulty === filter
+  );
+
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case "Easy":
+        return "from-green-400 to-emerald-400";
+      case "Medium":
+        return "from-yellow-400 to-orange-400";
+      case "Hard":
+        return "from-red-400 to-pink-400";
+      default:
+        return "from-gray-400 to-gray-500";
+    }
+  };
+
+  const getDifficultyBg = (difficulty: string) => {
+    switch (difficulty) {
+      case "Easy":
+        return "bg-green-500/20 text-green-300 border-green-500/30";
+      case "Medium":
+        return "bg-yellow-500/20 text-yellow-300 border-yellow-500/30";
+      case "Hard":
+        return "bg-red-500/20 text-red-300 border-red-500/30";
+      default:
+        return "bg-gray-500/20 text-gray-300 border-gray-500/30";
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-xl">Loading problems...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-black text-white">
+      {/* Header */}
+      <div className="bg-white/5 backdrop-blur-xl border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                LeetCode → Engineering
+              </h1>
+              <p className="text-gray-400 mt-2">
+                {problems.length} problems bridging algorithms to real systems
+              </p>
+            </div>
+            <Link
+              href="/"
+              className="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl transition-all duration-300"
+            >
+              ← Back to Home
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Filters */}
+        <div className="flex flex-wrap gap-4 mb-8">
+          {["All", "Easy", "Medium", "Hard"].map((difficulty) => (
+            <button
+              key={difficulty}
+              onClick={() => setFilter(difficulty as any)}
+              className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+                filter === difficulty
+                  ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white"
+                  : "bg-white/10 text-gray-400 hover:text-white hover:bg-white/20"
+              }`}
+            >
+              {difficulty}
+              {difficulty !== "All" && (
+                <span className="ml-2 text-xs opacity-70">
+                  ({problems.filter((p) => p.difficulty === difficulty).length})
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* Problems Grid */}
+        {filteredProblems.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">🤔</div>
+            <h2 className="text-2xl font-bold text-gray-400 mb-2">
+              No problems found
+            </h2>
+            <p className="text-gray-500">
+              {filter !== "All"
+                ? `No ${filter} problems available yet.`
+                : "Start by creating your first problem in the admin dashboard."}
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredProblems.map((problem, index) => (
+              <Link
+                key={problem.id}
+                href={`/problems/${problem.id}`}
+                className="group"
+              >
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 transition-all duration-500 hover:scale-105 hover:bg-white/10 hover:border-white/20 h-full">
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-sm font-mono text-gray-400 bg-white/10 px-3 py-1 rounded-full">
+                      #{problem.leetcodeNumber}
+                    </span>
+                    <span
+                      className={`text-xs font-semibold px-3 py-1 rounded-full border ${getDifficultyBg(
+                        problem.difficulty
+                      )}`}
+                    >
+                      {problem.difficulty.toUpperCase()}
+                    </span>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-xl font-bold mb-3 text-white group-hover:bg-gradient-to-r group-hover:from-purple-200 group-hover:to-blue-200 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
+                    {problem.title}
+                  </h3>
+
+                  {/* Description */}
+                  <p className="text-gray-400 text-sm leading-relaxed mb-4 line-clamp-3">
+                    {problem.description}
+                  </p>
+
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {problem.tags.slice(0, 3).map((tag, tagIndex) => (
+                      <span
+                        key={tagIndex}
+                        className="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                    {problem.tags.length > 3 && (
+                      <span className="text-xs text-gray-500">
+                        +{problem.tags.length - 3} more
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Read More */}
+                  <div className="flex items-center text-sm text-purple-400 group-hover:text-purple-300 transition-colors">
+                    <span>Read Full Analysis</span>
+                    <span className="ml-2 group-hover:translate-x-1 transition-transform duration-300">
+                      →
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+</file>
+
+</files>
+</file>
+
+<file path="src/app/globals.css">
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+</file>
+
+<file path="src/app/layout.tsx">
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata: Metadata = {
+  title: 'Create Next App',
+  description: 'Generated by create next app',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>{children}</body>
+    </html>
+  )
+}
+</file>
+
+<file path="src/lib/supabaseClient.ts">
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
+const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+if (!supabaseUrl) {
+  throw new Error('Missing SUPABASE_URL environment variable')
+}
+
+export const supabase = createClient(supabaseUrl, anonKey ?? '')
+export const supabaseAdmin = serviceRoleKey ? createClient(supabaseUrl, serviceRoleKey) : supabase
+</file>
+
+<file path=".env.example">
+NEXT_PUBLIC_SUPABASE_URL=https://ntiwhhuukafupyrxbwrd.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50aXdoaHV1a2FmdXB5cnhid3JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA2NDUyNTUsImV4cCI6MjA2NjIyMTI1NX0.DyqEunpoLLrDzQgKvQ751g0y8rsOofQqEw4w67jVvho
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50aXdoaHV1a2FmdXB5cnhid3JkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MDY0NTI1NSwiZXhwIjoyMDY2MjIxMjU1fQ.zpxZNxnDK889lGrJxSgyJeMahBpWa9lR-VMfF2fRg20
+</file>
+
+<file path=".eslintrc.json">
+{
+  "extends": "next/core-web-vitals"
+}
+</file>
+
+<file path=".gitignore">
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+</file>
+
+<file path="DATABASE_SCHEMA.md">
+# Supabase Database Schema
+
+This project uses Supabase as the database. Below is the schema used by the API routes.
+
+## Tables
+
+### problems
+- `id` TEXT PRIMARY KEY
+- `leetcode_number` INTEGER
+- `title` TEXT
+- `difficulty` TEXT
+- `description` TEXT
+- `tags` TEXT[]
+- `created_at` TIMESTAMP WITH TIME ZONE
+- `updated_at` TIMESTAMP WITH TIME ZONE
+
+### blogs
+- `id` TEXT PRIMARY KEY
+- `title` TEXT
+- `category` TEXT
+- `content` TEXT
+- `tags` TEXT[]
+- `key_takeaways` TEXT[]
+- `related_problems` TEXT[]
+- `created_at` TIMESTAMP WITH TIME ZONE
+- `updated_at` TIMESTAMP WITH TIME ZONE
+
+### reviews
+- `problem_id` TEXT PRIMARY KEY
+- `last_reviewed` TIMESTAMP WITH TIME ZONE
+- `next_review` TIMESTAMP WITH TIME ZONE
+- `interval` INTEGER
+- `repetitions` INTEGER
+- `ease_factor` NUMERIC
+- `difficulty` TEXT
+
+### checkins
+- `date` DATE PRIMARY KEY
+
+## SQL
+See `schema.sql` for SQL commands to create these tables.
+</file>
+
+<file path="next.config.js">
+/** @type {import('next').NextConfig} */
+const nextConfig = {}
+
+module.exports = nextConfig
+</file>
+
+<file path="postcss.config.js">
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+</file>
+
+<file path="schema.sql">
+create table if not exists problems (
+  id text primary key,
+  leetcode_number integer,
+  title text,
+  difficulty text,
+  description text,
+  tags text[],
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+create table if not exists blogs (
+  id text primary key,
+  title text,
+  category text,
+  content text,
+  tags text[],
+  key_takeaways text[],
+  related_problems text[],
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+create table if not exists reviews (
+  problem_id text primary key references problems(id),
+  last_reviewed timestamptz,
+  next_review timestamptz,
+  interval integer,
+  repetitions integer,
+  ease_factor numeric,
+  difficulty text
+);
+
+create table if not exists checkins (
+  date date primary key
+);
+</file>
+
+<file path="tailwind.config.ts">
+import type { Config } from 'tailwindcss'
+
+const config: Config = {
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic':
+          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      },
+    },
+  },
+  plugins: [],
+}
+export default config
+</file>
+
+<file path="tsconfig.json">
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
+</file>
+
+<file path="src/app/admin/dashboard/page.tsx">
+"use client";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+
+interface ProblemData {
+  // LeetCode Details
+  leetcodeNumber: number;
+  title: string;
+  difficulty: "Easy" | "Medium" | "Hard";
+  description: string;
+  solution: string;
+  timeComplexity: string;
+  spaceComplexity: string;
+  tags: string[];
+  leetcodeUrl: string;
+
+  // LLD (Low Level Design)
+  lldQuestion: string;
+  lldApproach: string;
+  lldTechStack: string[];
+  lldCodeExample: string;
+
+  // HLD (High Level Design)
+  hldQuestion: string;
+  hldApproach: string;
+  hldTechStack: string[];
+  hldArchitecture: string;
+
+  // System Design
+  systemDesignQuestion: string;
+  systemDesignApproach: string;
+  systemDesignDiagram: string;
+  scalingConsiderations: string;
+}
+
+interface BlogData {
+  title: string;
+  category: "ml-platform" | "distributed-systems" | "recommendation-systems";
+  content: string;
+  tags: string[];
+  keyTakeaways: string[];
+  relatedProblems: string[];
+}
+
+export default function AdminDashboard() {
+  const [formType, setFormType] = useState<"problem" | "blog">("problem");
+  const [formData, setFormData] = useState<ProblemData>({
+    leetcodeNumber: 0,
+    title: "",
+    difficulty: "Easy",
+    description: "",
+    solution: "",
+    timeComplexity: "",
+    spaceComplexity: "",
+    tags: [],
+    leetcodeUrl: "",
+    lldQuestion: "",
+    lldApproach: "",
+    lldTechStack: [],
+    lldCodeExample: "",
+    hldQuestion: "",
+    hldApproach: "",
+    hldTechStack: [],
+    hldArchitecture: "",
+    systemDesignQuestion: "",
+    systemDesignApproach: "",
+    systemDesignDiagram: "",
+    scalingConsiderations: "",
+  });
+
+  const [blogData, setBlogData] = useState<BlogData>({
+    title: "",
+    category: "ml-platform",
+    content: "",
+    tags: [],
+    keyTakeaways: [],
+    relatedProblems: [],
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentTab, setCurrentTab] = useState("leetcode");
+  const [autoCommit, setAutoCommit] = useState(true);
+
+  const handleProblemSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/problems/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert("Problem saved successfully!");
+
+        // Auto-commit to GitHub if enabled
+        if (autoCommit) {
+          try {
+            const githubResponse = await fetch("/api/github/commit", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ problemData: formData }),
+            });
+
+            if (githubResponse.ok) {
+              alert("Problem saved and committed to GitHub!");
+            }
+          } catch (error) {
+            console.error("GitHub commit error:", error);
+          }
+        }
+
+        // Create initial review entry
+        try {
+          await fetch("/api/reviews", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              problemId: result.problemId,
+              quality: 0,
+            }),
+          });
+        } catch (error) {
+          console.error("Failed to create review entry:", error);
+        }
+
+        // Reset form
+        setFormData({
+          leetcodeNumber: 0,
+          title: "",
+          difficulty: "Easy",
+          description: "",
+          solution: "",
+          timeComplexity: "",
+          spaceComplexity: "",
+          tags: [],
+          leetcodeUrl: "",
+          lldQuestion: "",
+          lldApproach: "",
+          lldTechStack: [],
+          lldCodeExample: "",
+          hldQuestion: "",
+          hldApproach: "",
+          hldTechStack: [],
+          hldArchitecture: "",
+          systemDesignQuestion: "",
+          systemDesignApproach: "",
+          systemDesignDiagram: "",
+          scalingConsiderations: "",
+        });
+        setCurrentTab("leetcode");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error saving problem.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleBlogSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/blogs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(blogData),
+      });
+
+      if (response.ok) {
+        alert("Blog saved successfully!");
+
+        // Reset blog form
+        setBlogData({
+          title: "",
+          category: "ml-platform",
+          content: "",
+          tags: [],
+          keyTakeaways: [],
+          relatedProblems: [],
+        });
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error saving blog.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const updateFormData = (field: keyof ProblemData, value: any) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const updateBlogData = (field: keyof BlogData, value: any) => {
+    setBlogData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const addTag = (
+    tag: string,
+    field: "tags" | "lldTechStack" | "hldTechStack"
+  ) => {
+    if (tag.trim()) {
+      updateFormData(field, [...formData[field], tag.trim()]);
+    }
+  };
+
+  const addBlogTag = (
+    tag: string,
+    field: "tags" | "keyTakeaways" | "relatedProblems"
+  ) => {
+    if (tag.trim()) {
+      updateBlogData(field, [...blogData[field], tag.trim()]);
+    }
+  };
+
+  const removeTag = (
+    index: number,
+    field: "tags" | "lldTechStack" | "hldTechStack"
+  ) => {
+    updateFormData(
+      field,
+      formData[field].filter((_, i) => i !== index)
+    );
+  };
+
+  const removeBlogTag = (
+    index: number,
+    field: "tags" | "keyTakeaways" | "relatedProblems"
+  ) => {
+    updateBlogData(
+      field,
+      blogData[field].filter((_, i) => i !== index)
+    );
+  };
+
+  const tabs = [
+    { id: "leetcode", label: "LeetCode Problem", icon: "🧮" },
+    { id: "lld", label: "Low Level Design", icon: "🎨" },
+    { id: "hld", label: "High Level Design", icon: "⚙️" },
+    { id: "system", label: "System Design", icon: "🏗️" },
+  ];
+
+  return (
+    <div className="min-h-screen bg-black text-white">
+      {/* Header */}
+      <div className="bg-white/5 backdrop-blur-xl border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                Admin Dashboard
+              </h1>
+              <p className="text-gray-400 mt-2">
+                Create content to showcase your expertise
+              </p>
+            </div>
+            <div className="flex items-center space-x-4">
+              {/* Form Type Toggle */}
+              <div className="flex bg-white/10 rounded-xl p-1">
+                <button
+                  onClick={() => setFormType("problem")}
+                  className={`px-4 py-2 rounded-lg transition-all ${
+                    formType === "problem"
+                      ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white"
+                      : "text-gray-400"
+                  }`}
+                >
+                  Problem
+                </button>
+                <button
+                  onClick={() => setFormType("blog")}
+                  className={`px-4 py-2 rounded-lg transition-all ${
+                    formType === "blog"
+                      ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white"
+                      : "text-gray-400"
+                  }`}
+                >
+                  Blog Post
+                </button>
+              </div>
+
+              {/* Auto-commit toggle */}
+              {formType === "problem" && (
+                <label className="flex items-center space-x-2 bg-white/10 px-4 py-2 rounded-xl">
+                  <input
+                    type="checkbox"
+                    checked={autoCommit}
+                    onChange={(e) => setAutoCommit(e.target.checked)}
+                    className="w-4 h-4 text-purple-600 bg-gray-900 border-gray-600 rounded focus:ring-purple-500"
+                  />
+                  <span className="text-sm text-gray-300">
+                    Auto-commit to GitHub
+                  </span>
+                </label>
+              )}
+
+              <Link
+                href="/"
+                className="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl transition-all duration-300"
+              >
+                View Site
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {formType === "problem" ? (
+          <form onSubmit={handleProblemSubmit} className="space-y-8">
+            {/* Tab Navigation */}
+            <div className="flex flex-wrap gap-2 mb-8">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setCurrentTab(tab.id)}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 ${
+                    currentTab === tab.id
+                      ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white"
+                      : "bg-white/5 text-gray-400 hover:text-white hover:bg-white/10"
+                  }`}
+                >
+                  <span>{tab.icon}</span>
+                  <span className="hidden sm:block">{tab.label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* LeetCode Tab */}
+            {currentTab === "leetcode" && (
+              <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 space-y-6">
+                <h2 className="text-2xl font-bold text-purple-400 mb-6">
+                  🧮 LeetCode Problem
+                </h2>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-gray-300 mb-2">
+                      Problem Number
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.leetcodeNumber || ""}
+                      onChange={(e) =>
+                        updateFormData(
+                          "leetcodeNumber",
+                          parseInt(e.target.value)
+                        )
+                      }
+                      className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
+                      placeholder="1"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-300 mb-2">
+                      Difficulty
+                    </label>
+                    <select
+                      value={formData.difficulty}
+                      onChange={(e) =>
+                        updateFormData("difficulty", e.target.value)
+                      }
+                      className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
+                    >
+                      <option value="Easy">Easy</option>
+                      <option value="Medium">Medium</option>
+                      <option value="Hard">Hard</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 mb-2">Title</label>
+                  <input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) => updateFormData("title", e.target.value)}
+                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
+                    placeholder="Two Sum"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 mb-2">
+                    LeetCode URL
+                  </label>
+                  <input
+                    type="url"
+                    value={formData.leetcodeUrl}
+                    onChange={(e) =>
+                      updateFormData("leetcodeUrl", e.target.value)
+                    }
+                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
+                    placeholder="https://leetcode.com/problems/two-sum/"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    value={formData.description}
+                    onChange={(e) =>
+                      updateFormData("description", e.target.value)
+                    }
+                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white h-32"
+                    placeholder="Given an array of integers, return indices of two numbers such that they add up to a specific target..."
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 mb-2">
+                    Solution (Code)
+                  </label>
+                  <textarea
+                    value={formData.solution}
+                    onChange={(e) => updateFormData("solution", e.target.value)}
+                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white h-40 font-mono text-sm"
+                    placeholder="function twoSum(nums: number[], target: number): number[] {..."
+                    required
+                  />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-gray-300 mb-2">
+                      Time Complexity
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.timeComplexity}
+                      onChange={(e) =>
+                        updateFormData("timeComplexity", e.target.value)
+                      }
+                      className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
+                      placeholder="O(n)"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-300 mb-2">
+                      Space Complexity
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.spaceComplexity}
+                      onChange={(e) =>
+                        updateFormData("spaceComplexity", e.target.value)
+                      }
+                      className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
+                      placeholder="O(n)"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Tags */}
+                <div>
+                  <label className="block text-gray-300 mb-2">Tags</label>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {formData.tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm flex items-center space-x-2"
+                      >
+                        <span>{tag}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeTag(index, "tags")}
+                          className="text-purple-300 hover:text-white"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                  <input
+                    type="text"
+                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
+                    placeholder="Add tag and press Enter"
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addTag((e.target as HTMLInputElement).value, "tags");
+                        (e.target as HTMLInputElement).value = "";
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* LLD Tab */}
+            {currentTab === "lld" && (
+              <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 space-y-6">
+                <h2 className="text-2xl font-bold text-purple-400 mb-6">
+                  🎨 Low Level Design
+                </h2>
+
+                <div>
+                  <label className="block text-gray-300 mb-2">
+                    LLD Question
+                  </label>
+                  <textarea
+                    value={formData.lldQuestion}
+                    onChange={(e) =>
+                      updateFormData("lldQuestion", e.target.value)
+                    }
+                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white h-32"
+                    placeholder="Design a shopping cart component that finds products matching user's budget constraints..."
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 mb-2">
+                    LLD Approach
+                  </label>
+                  <textarea
+                    value={formData.lldApproach}
+                    onChange={(e) =>
+                      updateFormData("lldApproach", e.target.value)
+                    }
+                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white h-40"
+                    placeholder="We can use the Two Sum algorithm to efficiently find product combinations that fit within the user's budget..."
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 mb-2">
+                    LLD Code Example
+                  </label>
+                  <textarea
+                    value={formData.lldCodeExample}
+                    onChange={(e) =>
+                      updateFormData("lldCodeExample", e.target.value)
+                    }
+                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white h-48 font-mono text-sm"
+                    placeholder="interface Product { id: string; price: number; name: string; }..."
+                    required
+                  />
+                </div>
+
+                {/* LLD Tech Stack */}
+                <div>
+                  <label className="block text-gray-300 mb-2">Tech Stack</label>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {formData.lldTechStack.map((tech, index) => (
+                      <span
+                        key={index}
+                        className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm flex items-center space-x-2"
+                      >
+                        <span>{tech}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeTag(index, "lldTechStack")}
+                          className="text-blue-300 hover:text-white"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                  <input
+                    type="text"
+                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
+                    placeholder="React, TypeScript, etc."
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addTag(
+                          (e.target as HTMLInputElement).value,
+                          "lldTechStack"
+                        );
+                        (e.target as HTMLInputElement).value = "";
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* HLD Tab */}
+            {currentTab === "hld" && (
+              <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 space-y-6">
+                <h2 className="text-2xl font-bold text-green-400 mb-6">
+                  ⚙️ High Level Design
+                </h2>
+
+                <div>
+                  <label className="block text-gray-300 mb-2">
+                    HLD Question
+                  </label>
+                  <textarea
+                    value={formData.hldQuestion}
+                    onChange={(e) =>
+                      updateFormData("hldQuestion", e.target.value)
+                    }
+                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white h-32"
+                    placeholder="Design a user matching API that pairs users with complementary skills..."
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 mb-2">
+                    HLD Approach
+                  </label>
+                  <textarea
+                    value={formData.hldApproach}
+                    onChange={(e) =>
+                      updateFormData("hldApproach", e.target.value)
+                    }
+                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white h-40"
+                    placeholder="We can apply the Two Sum pattern to match users by storing required skills in a hash map..."
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 mb-2">
+                    Architecture
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.hldArchitecture}
+                    onChange={(e) =>
+                      updateFormData("hldArchitecture", e.target.value)
+                    }
+                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
+                    placeholder="Microservices with Redis Cache"
+                    required
+                  />
+                </div>
+
+                {/* HLD Tech Stack */}
+                <div>
+                  <label className="block text-gray-300 mb-2">Tech Stack</label>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {formData.hldTechStack.map((tech, index) => (
+                      <span
+                        key={index}
+                        className="bg-green-500/20 text-green-300 px-3 py-1 rounded-full text-sm flex items-center space-x-2"
+                      >
+                        <span>{tech}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeTag(index, "hldTechStack")}
+                          className="text-green-300 hover:text-white"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                  <input
+                    type="text"
+                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
+                    placeholder="Node.js, Redis, PostgreSQL, etc."
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addTag(
+                          (e.target as HTMLInputElement).value,
+                          "hldTechStack"
+                        );
+                        (e.target as HTMLInputElement).value = "";
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* System Design Tab */}
+            {currentTab === "system" && (
+              <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 space-y-6">
+                <h2 className="text-2xl font-bold text-orange-400 mb-6">
+                  🏗️ System Design
+                </h2>
+
+                <div>
+                  <label className="block text-gray-300 mb-2">
+                    System Design Question
+                  </label>
+                  <textarea
+                    value={formData.systemDesignQuestion}
+                    onChange={(e) =>
+                      updateFormData("systemDesignQuestion", e.target.value)
+                    }
+                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white h-32"
+                    placeholder="Design a load balancer that distributes requests across server pairs efficiently..."
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 mb-2">
+                    System Design Approach
+                  </label>
+                  <textarea
+                    value={formData.systemDesignApproach}
+                    onChange={(e) =>
+                      updateFormData("systemDesignApproach", e.target.value)
+                    }
+                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white h-40"
+                    placeholder="Using the Two Sum concept, we can implement consistent hashing to pair requests with optimal server combinations..."
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 mb-2">
+                    System Diagram (URL or Description)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.systemDesignDiagram}
+                    onChange={(e) =>
+                      updateFormData("systemDesignDiagram", e.target.value)
+                    }
+                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
+                    placeholder="https://example.com/diagram.png or describe the architecture"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-300 mb-2">
+                    Scaling Considerations
+                  </label>
+                  <textarea
+                    value={formData.scalingConsiderations}
+                    onChange={(e) =>
+                      updateFormData("scalingConsiderations", e.target.value)
+                    }
+                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white h-32"
+                    placeholder="How this system scales to millions of users, potential bottlenecks, and optimization strategies..."
+                    required
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Submit Button */}
+            <div className="flex items-center justify-center space-x-4">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-12 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? "Saving..." : "Save Problem"}
+              </button>
+
+              {isSubmitting && (
+                <div className="flex items-center space-x-2 text-gray-400">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-400"></div>
+                  <span className="text-sm">Processing...</span>
+                </div>
+              )}
+            </div>
+          </form>
+        ) : (
+          // Blog Form
+          <form onSubmit={handleBlogSubmit} className="space-y-8">
+            <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 space-y-6">
+              <h2 className="text-2xl font-bold text-purple-400 mb-6">
+                📝 Technical Blog Post
+              </h2>
+
+              <div>
+                <label className="block text-gray-300 mb-2">Blog Title</label>
+                <input
+                  type="text"
+                  value={blogData.title}
+                  onChange={(e) => updateBlogData("title", e.target.value)}
+                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
+                  placeholder="Building Scalable ML Pipelines with Apache Spark"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-300 mb-2">Category</label>
+                <select
+                  value={blogData.category}
+                  onChange={(e) => updateBlogData("category", e.target.value)}
+                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
+                >
+                  <option value="ml-platform">ML Platform & MLOps</option>
+                  <option value="distributed-systems">
+                    Distributed Systems
+                  </option>
+                  <option value="recommendation-systems">
+                    Recommendation Systems
+                  </option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-gray-300 mb-2">
+                  Content (Markdown supported)
+                </label>
+                <textarea
+                  value={blogData.content}
+                  onChange={(e) => updateBlogData("content", e.target.value)}
+                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white h-96 font-mono text-sm"
+                  placeholder="## Introduction&#10;&#10;In this post, we'll explore how to build scalable ML pipelines..."
+                  required
+                />
+              </div>
+
+              {/* Tags */}
+              <div>
+                <label className="block text-gray-300 mb-2">Tags</label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {blogData.tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm flex items-center space-x-2"
+                    >
+                      <span>{tag}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeBlogTag(index, "tags")}
+                        className="text-purple-300 hover:text-white"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
+                  placeholder="Add tag and press Enter"
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addBlogTag((e.target as HTMLInputElement).value, "tags");
+                      (e.target as HTMLInputElement).value = "";
+                    }
+                  }}
+                />
+              </div>
+
+              {/* Key Takeaways */}
+              <div>
+                <label className="block text-gray-300 mb-2">
+                  Key Takeaways
+                </label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {blogData.keyTakeaways.map((takeaway, index) => (
+                    <span
+                      key={index}
+                      className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm flex items-center space-x-2"
+                    >
+                      <span>{takeaway}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeBlogTag(index, "keyTakeaways")}
+                        className="text-blue-300 hover:text-white"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
+                  placeholder="Add key takeaway and press Enter"
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addBlogTag(
+                        (e.target as HTMLInputElement).value,
+                        "keyTakeaways"
+                      );
+                      (e.target as HTMLInputElement).value = "";
+                    }
+                  }}
+                />
+              </div>
+
+              {/* Related Problems */}
+              <div>
+                <label className="block text-gray-300 mb-2">
+                  Related LeetCode Problems
+                </label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {blogData.relatedProblems.map((problem, index) => (
+                    <span
+                      key={index}
+                      className="bg-green-500/20 text-green-300 px-3 py-1 rounded-full text-sm flex items-center space-x-2"
+                    >
+                      <span>{problem}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeBlogTag(index, "relatedProblems")}
+                        className="text-green-300 hover:text-white"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white"
+                  placeholder="Problem name or number"
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addBlogTag(
+                        (e.target as HTMLInputElement).value,
+                        "relatedProblems"
+                      );
+                      (e.target as HTMLInputElement).value = "";
+                    }
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="flex items-center justify-center space-x-4">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-12 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? "Saving..." : "Publish Blog"}
+              </button>
+
+              {isSubmitting && (
+                <div className="flex items-center space-x-2 text-gray-400">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-400"></div>
+                  <span className="text-sm">Processing...</span>
+                </div>
+              )}
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/app/api/auth/login/route.ts">
+import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+
+const ADMIN_PASSWORD = 'Mithilesh@98'; // Change this!
+
+export async function POST(request: Request) {
+  const { password } = await request.json();
+
+  if (password === ADMIN_PASSWORD) {
+    const cookieStore = cookies();
+    cookieStore.set('admin-auth', 'authenticated', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    });
+
+    return NextResponse.json({ success: true });
+  }
+
+  return NextResponse.json({ error: 'Invalid password' }, { status: 401 });
+}
+</file>
+
+<file path="src/app/api/checkin/calendar/route.ts">
+import { NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabaseClient';
+
 
 export async function GET() {
   try {
-    if (!fs.existsSync(PROBLEMS_DIR)) {
-      return NextResponse.json({ problems: [] });
+    const calendar: { [date: string]: number } = {};
+    
+    const { data: checkins } = await supabaseAdmin
+      .from('checkins')
+      .select('date');
+
+    checkins?.forEach(c => {
+      const date = c.date as string;
+      calendar[date] = (calendar[date] || 0) + 1;
+    });
+
+    const { data: problems } = await supabaseAdmin
+      .from('problems')
+      .select('created_at');
+
+    problems?.forEach(p => {
+      const date = new Date(p.created_at as string).toISOString().split('T')[0];
+      calendar[date] = (calendar[date] || 0) + 2;
+    });
+
+    const { data: blogs } = await supabaseAdmin
+      .from('blogs')
+      .select('created_at');
+
+    blogs?.forEach(b => {
+      const date = new Date(b.created_at as string).toISOString().split('T')[0];
+      calendar[date] = (calendar[date] || 0) + 3;
+    });
+
+    // Convert to array format
+    const calendarArray = Object.entries(calendar).map(([date, count]) => ({
+      date,
+      count
+    }));
+
+    return NextResponse.json({ calendar: calendarArray });
+
+  } catch (error) {
+    console.error('Calendar error:', error);
+    return NextResponse.json({ error: 'Failed to fetch calendar' }, { status: 500 });
+  }
+}
+</file>
+
+<file path="src/app/api/checkin/route.ts">
+import { NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabaseClient';
+
+interface CheckinData {
+  date: string;
+}
+
+function calculateStreaks(dates: string[]): { current: number; longest: number; lastCheckin: string | null } {
+  if (dates.length === 0) {
+    return { current: 0, longest: 0, lastCheckin: null };
+  }
+
+  const sorted = dates
+    .map(d => new Date(d))
+    .sort((a, b) => a.getTime() - b.getTime());
+
+  let current = 1;
+  let longest = 1;
+
+  for (let i = 1; i < sorted.length; i++) {
+    const diff = (sorted[i].getTime() - sorted[i - 1].getTime()) / (1000 * 60 * 60 * 24);
+    if (diff === 1) {
+      current += 1;
+    } else if (diff > 1) {
+      current = 1;
+    }
+    if (current > longest) longest = current;
+  }
+
+  return { current, longest, lastCheckin: sorted[sorted.length - 1].toISOString().split('T')[0] };
+}
+
+export async function POST() {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+
+    const { data: existing } = await supabaseAdmin
+      .from('checkins')
+      .select('date')
+      .eq('date', today)
+      .maybeSingle();
+
+    const { data: allDatesData } = await supabaseAdmin
+      .from('checkins')
+      .select('date')
+      .order('date');
+
+    const dates = allDatesData?.map(d => d.date as string) || [];
+
+    if (existing) {
+      const streak = calculateStreaks(dates);
+      return NextResponse.json({
+        message: 'Already checked in today!',
+        currentStreak: streak.current,
+        longestStreak: streak.longest
+      });
     }
 
-    const files = fs.readdirSync(PROBLEMS_DIR);
-    const problems = files
-      .filter(file => file.endsWith('.json'))
-      .map(file => {
-        const filePath = path.join(PROBLEMS_DIR, file);
-        const content = fs.readFileSync(filePath, 'utf-8');
-        return JSON.parse(content);
-      })
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    await supabaseAdmin.from('checkins').insert({ date: today });
 
-    return NextResponse.json({ problems });
+    const updatedDates = [...dates, today];
+    const streak = calculateStreaks(updatedDates);
+
+    return NextResponse.json({
+      success: true,
+      currentStreak: streak.current,
+      longestStreak: streak.longest
+    });
+
+  } catch (error) {
+    console.error('Check-in error:', error);
+    return NextResponse.json({ error: 'Failed to check in' }, { status: 500 });
+  }
+}
+
+export async function GET() {
+  try {
+    const { data } = await supabaseAdmin
+      .from('checkins')
+      .select('date')
+      .order('date');
+
+    const dates = data?.map(d => d.date as string) || [];
+    const streak = calculateStreaks(dates);
+
+    return NextResponse.json({
+      currentStreak: streak.current,
+      longestStreak: streak.longest,
+      lastCheckin: streak.lastCheckin,
+      totalDays: dates.length
+    });
+
+  } catch (error) {
+    console.error('Error fetching check-in data:', error);
+    return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 });
+  }
+}
+</file>
+
+<file path="src/app/api/notifications/route.ts">
+import { NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabaseClient';
+
+
+
+export async function GET() {
+  try {
+    const reminders: string[] = [];
+    
+    const { data: reviews } = await supabaseAdmin.from('reviews').select('*');
+    const now = new Date();
+    for (const review of reviews || []) {
+      if (new Date(review.next_review as string) <= now) {
+        const { data: problem } = await supabaseAdmin
+          .from('problems')
+          .select('title, difficulty')
+          .eq('id', review.problem_id)
+          .maybeSingle();
+        if (problem) {
+          reminders.push(`Review due: ${problem.title} (${problem.difficulty})`);
+        }
+      }
+    }
+
+    // Add daily study reminder if no check-in today
+    const { data: checkins } = await supabaseAdmin
+      .from('checkins')
+      .select('date');
+    const today = new Date().toISOString().split('T')[0];
+    const checkedInToday = checkins?.some(c => c.date === today);
+    if (!checkedInToday) {
+      reminders.push("Don't forget your daily check-in! Keep your streak alive 🔥");
+    }
+
+    // Add blog reminder (write at least one blog per week)
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    const { data: blogs } = await supabaseAdmin
+      .from('blogs')
+      .select('created_at');
+    const recentBlogs = (blogs || []).filter(b => new Date(b.created_at as string) > weekAgo);
+    if (recentBlogs.length === 0) {
+      reminders.push("Time to write a technical blog! Share your knowledge 📝");
+    }
+
+    return NextResponse.json({ reminders });
+
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 });
+  }
+}
+</file>
+
+<file path="src/app/api/problems/create/route.ts">
+import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import { supabaseAdmin } from '@/lib/supabaseClient';
+
+
+export async function POST(request: Request) {
+  try {
+    // Check admin authentication
+    const cookieStore = cookies();
+    const isAuthenticated = cookieStore.get('admin-auth')?.value === 'authenticated';
+    
+    if (!isAuthenticated) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const problemData = await request.json();
+    
+    // Add timestamp and generate ID
+    const timestamp = new Date().toISOString();
+    const problemId = `problem-${problemData.leetcodeNumber}-${Date.now()}`;
+    
+
+    const { error } = await supabaseAdmin.from('problems').insert({
+      id: problemId,
+      leetcode_number: problemData.leetcodeNumber,
+      title: problemData.title,
+      difficulty: problemData.difficulty,
+      description: problemData.description,
+      tags: problemData.tags,
+      created_at: timestamp,
+      updated_at: timestamp
+    });
+
+    if (error) throw error;
+    
+    return NextResponse.json({ 
+      success: true, 
+      problemId,
+      message: 'Problem saved successfully!' 
+    });
+
+  } catch (error) {
+    console.error('❌ Error saving problem:', error);
+    return NextResponse.json(
+      { error: 'Failed to save problem' }, 
+      { status: 500 }
+    );
+  }
+}
+
+// Optional: GET endpoint to retrieve problems
+export async function GET() {
+  try {
+    const cookieStore = cookies();
+    const isAuthenticated = cookieStore.get('admin-auth')?.value === 'authenticated';
+    
+    if (!isAuthenticated) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { data, error } = await supabaseAdmin
+      .from('problems')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    return NextResponse.json({ problems: data ?? [] });
 
   } catch (error) {
     console.error('❌ Error fetching problems:', error);
@@ -1483,9 +4098,34 @@ export async function GET() {
 }
 </file>
 
+<file path="src/app/api/problems/route.ts">
+import { NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabaseClient';
+
+export async function GET() {
+  try {
+    const { data, error } = await supabase
+      .from('problems')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    return NextResponse.json({ problems: data ?? [] });
+
+  } catch (error) {
+    console.error('❌ Error fetching problems:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch problems' },
+      { status: 500 }
+    );
+  }
+}
+</file>
+
 <file path="src/app/components/CodeEditor.tsx">
 "use client";
-import { useState, useRef, KeyboardEvent } from "react";
+import { useState, useRef, useEffect, KeyboardEvent } from "react";
 
 interface CodeEditorProps {
   value: string;
@@ -1504,6 +4144,12 @@ export default function CodeEditor({
 }: CodeEditorProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [lineCount, setLineCount] = useState(1);
+
+  // Keep line numbers in sync with the initial value
+  useEffect(() => {
+    const lines = value.split("\n").length;
+    setLineCount(lines);
+  }, [value]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     const textarea = e.currentTarget;
@@ -1706,580 +4352,6 @@ export default function CodeEditor({
 }
 </file>
 
-<file path="public/next.svg">
-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 394 80"><path fill="#000" d="M262 0h68.5v12.7h-27.2v66.6h-13.6V12.7H262V0ZM149 0v12.7H94v20.4h44.3v12.6H94v21h55v12.6H80.5V0h68.7zm34.3 0h-17.8l63.8 79.4h17.9l-32-39.7 32-39.6h-17.9l-23 28.6-23-28.6zm18.3 56.7-9-11-27.1 33.7h17.8l18.3-22.7z"/><path fill="#000" d="M81 79.3 17 0H0v79.3h13.6V17l50.2 62.3H81Zm252.6-.4c-1 0-1.8-.4-2.5-1s-1.1-1.6-1.1-2.6.3-1.8 1-2.5 1.6-1 2.6-1 1.8.3 2.5 1a3.4 3.4 0 0 1 .6 4.3 3.7 3.7 0 0 1-3 1.8zm23.2-33.5h6v23.3c0 2.1-.4 4-1.3 5.5a9.1 9.1 0 0 1-3.8 3.5c-1.6.8-3.5 1.3-5.7 1.3-2 0-3.7-.4-5.3-1s-2.8-1.8-3.7-3.2c-.9-1.3-1.4-3-1.4-5h6c.1.8.3 1.6.7 2.2s1 1.2 1.6 1.5c.7.4 1.5.5 2.4.5 1 0 1.8-.2 2.4-.6a4 4 0 0 0 1.6-1.8c.3-.8.5-1.8.5-3V45.5zm30.9 9.1a4.4 4.4 0 0 0-2-3.3 7.5 7.5 0 0 0-4.3-1.1c-1.3 0-2.4.2-3.3.5-.9.4-1.6 1-2 1.6a3.5 3.5 0 0 0-.3 4c.3.5.7.9 1.3 1.2l1.8 1 2 .5 3.2.8c1.3.3 2.5.7 3.7 1.2a13 13 0 0 1 3.2 1.8 8.1 8.1 0 0 1 3 6.5c0 2-.5 3.7-1.5 5.1a10 10 0 0 1-4.4 3.5c-1.8.8-4.1 1.2-6.8 1.2-2.6 0-4.9-.4-6.8-1.2-2-.8-3.4-2-4.5-3.5a10 10 0 0 1-1.7-5.6h6a5 5 0 0 0 3.5 4.6c1 .4 2.2.6 3.4.6 1.3 0 2.5-.2 3.5-.6 1-.4 1.8-1 2.4-1.7a4 4 0 0 0 .8-2.4c0-.9-.2-1.6-.7-2.2a11 11 0 0 0-2.1-1.4l-3.2-1-3.8-1c-2.8-.7-5-1.7-6.6-3.2a7.2 7.2 0 0 1-2.4-5.7 8 8 0 0 1 1.7-5 10 10 0 0 1 4.3-3.5c2-.8 4-1.2 6.4-1.2 2.3 0 4.4.4 6.2 1.2 1.8.8 3.2 2 4.3 3.4 1 1.4 1.5 3 1.5 5h-5.8z"/></svg>
-</file>
-
-<file path="public/vercel.svg">
-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 283 64"><path fill="black" d="M141 16c-11 0-19 7-19 18s9 18 20 18c7 0 13-3 16-7l-7-5c-2 3-6 4-9 4-5 0-9-3-10-7h28v-3c0-11-8-18-19-18zm-9 15c1-4 4-7 9-7s8 3 9 7h-18zm117-15c-11 0-19 7-19 18s9 18 20 18c6 0 12-3 16-7l-8-5c-2 3-5 4-8 4-5 0-9-3-11-7h28l1-3c0-11-8-18-19-18zm-10 15c2-4 5-7 10-7s8 3 9 7h-19zm-39 3c0 6 4 10 10 10 4 0 7-2 9-5l8 5c-3 5-9 8-17 8-11 0-19-7-19-18s8-18 19-18c8 0 14 3 17 8l-8 5c-2-3-5-5-9-5-6 0-10 4-10 10zm83-29v46h-9V5h9zM37 0l37 64H0L37 0zm92 5-27 48L74 5h10l18 30 17-30h10zm59 12v10l-3-1c-6 0-10 4-10 10v15h-9V17h9v9c0-5 6-9 13-9z"/></svg>
-</file>
-
-<file path="src/app/globals.css">
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-</file>
-
-<file path="src/app/layout.tsx">
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import './globals.css'
-
-const inter = Inter({ subsets: ['latin'] })
-
-export const metadata: Metadata = {
-  title: 'Create Next App',
-  description: 'Generated by create next app',
-}
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
-    </html>
-  )
-}
-</file>
-
-<file path="src/app/page.tsx">
-"use client";
-import { useState, useEffect } from "react";
-import Link from "next/link";
-
-export default function Home() {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
-
-  useEffect(() => {
-    setIsLoaded(true);
-  }, []);
-
-  const navigationItems = [
-    { name: "Home", href: "/" },
-    { name: "Problems", href: "/problems" },
-    { name: "About", href: "#about" },
-    { name: "Contact", href: "#contact" },
-  ];
-
-  return (
-    <div className="min-h-screen bg-black text-white overflow-hidden">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-black"></div>
-        <div className="absolute top-0 left-1/4 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl animate-pulse delay-500"></div>
-      </div>
-
-      {/* Navigation */}
-      <nav
-        className={`relative z-50 backdrop-blur-xl bg-black/50 border-b border-white/10 transition-all duration-1000 ${
-          isLoaded ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <Link
-              href="/"
-              className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent hover:scale-105 transition-transform duration-300"
-            >
-              LeetCode → Engineering
-            </Link>
-            <div className="hidden md:flex space-x-8">
-              {navigationItems.map((item, index) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="text-gray-300 hover:text-white transition-all duration-300 hover:scale-105 relative group"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  {item.name}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-400 to-blue-400 group-hover:w-full transition-all duration-300"></span>
-                </Link>
-              ))}
-            </div>
-            {/* Mobile Menu Button */}
-            <button className="md:hidden p-2 group">
-              <div className="w-6 h-0.5 bg-white mb-1 transition-all duration-300 group-hover:bg-purple-400"></div>
-              <div className="w-6 h-0.5 bg-white mb-1 transition-all duration-300 group-hover:bg-purple-400"></div>
-              <div className="w-6 h-0.5 bg-white transition-all duration-300 group-hover:bg-purple-400"></div>
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Hero Section */}
-      <section className="relative z-10 pt-20 pb-16 sm:pt-32 sm:pb-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div
-            className={`text-center transition-all duration-1000 delay-300 ${
-              isLoaded
-                ? "translate-y-0 opacity-100"
-                : "translate-y-10 opacity-0"
-            }`}
-          >
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent leading-tight">
-              From LeetCode
-              <br className="hidden sm:block" />
-              <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                to Real Engineering
-              </span>
-            </h1>
-            <p className="text-lg sm:text-xl lg:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
-              Bridging algorithmic thinking with production systems.
-              <br className="hidden sm:block" />
-              See how <span className="text-purple-400">
-                data structures
-              </span>{" "}
-              power real applications.
-            </p>
-
-            {/* Animated Stats */}
-            <div className="grid grid-cols-3 gap-4 sm:gap-8 max-w-2xl mx-auto mb-12">
-              {[
-                {
-                  num: 25,
-                  label: "Problems",
-                  color: "from-purple-400 to-pink-400",
-                },
-                {
-                  num: 8,
-                  label: "Tech Stacks",
-                  color: "from-blue-400 to-cyan-400",
-                },
-                {
-                  num: 12,
-                  label: "Architectures",
-                  color: "from-green-400 to-teal-400",
-                },
-              ].map((stat, index) => (
-                <div
-                  key={index}
-                  className={`group cursor-pointer transition-all duration-500 delay-${
-                    index * 100
-                  } ${
-                    isLoaded
-                      ? "translate-y-0 opacity-100"
-                      : "translate-y-10 opacity-0"
-                  }`}
-                  onMouseEnter={() => setHoveredCard(index)}
-                  onMouseLeave={() => setHoveredCard(null)}
-                >
-                  <div
-                    className={`bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6 transition-all duration-300 ${
-                      hoveredCard === index
-                        ? "scale-110 bg-white/10"
-                        : "hover:scale-105"
-                    }`}
-                  >
-                    <div
-                      className={`text-2xl sm:text-4xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2`}
-                    >
-                      {stat.num}+
-                    </div>
-                    <div className="text-sm sm:text-base text-gray-400 group-hover:text-gray-300 transition-colors">
-                      {stat.label}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <Link href="/problems">
-              <button className="group relative bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25">
-                <span className="relative z-10 flex items-center space-x-2">
-                  <span>Explore Problems</span>
-                  <span className="group-hover:translate-x-1 transition-transform duration-300">
-                    →
-                  </span>
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-blue-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-lg"></div>
-              </button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Why This Approach */}
-      <section id="about" className="relative z-10 py-16 sm:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div
-            className={`text-center mb-16 transition-all duration-1000 delay-500 ${
-              isLoaded
-                ? "translate-y-0 opacity-100"
-                : "translate-y-10 opacity-0"
-            }`}
-          >
-            <h2 className="text-3xl sm:text-5xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-              Why This Approach?
-            </h2>
-            <p className="text-lg sm:text-xl text-gray-400 max-w-3xl mx-auto">
-              Traditional LeetCode preparation misses the bigger picture. I show
-              you the <span className="text-purple-400">real connections</span>.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: "🎨",
-                title: "Frontend Magic",
-                subtitle: "React • Vue • Svelte",
-                description:
-                  "Array algorithms become data visualization. Graph traversal powers component routing. Dynamic programming optimizes render cycles.",
-                gradient: "from-purple-500/20 to-pink-500/20",
-                border: "border-purple-500/30",
-              },
-              {
-                icon: "⚙️",
-                title: "Backend Power",
-                subtitle: "Node.js • Python • Go",
-                description:
-                  "Sorting algorithms scale databases. Tree structures organize microservices. Hash tables power distributed caching systems.",
-                gradient: "from-blue-500/20 to-cyan-500/20",
-                border: "border-blue-500/30",
-              },
-              {
-                icon: "🏗️",
-                title: "System Architecture",
-                subtitle: "AWS • Kubernetes • Docker",
-                description:
-                  "Consensus algorithms in distributed systems. Load balancing with graph theory. Consistent hashing in cloud architecture.",
-                gradient: "from-green-500/20 to-teal-500/20",
-                border: "border-green-500/30",
-              },
-            ].map((item, index) => (
-              <div
-                key={index}
-                className={`group cursor-pointer transition-all duration-700 delay-${
-                  600 + index * 100
-                } ${
-                  isLoaded
-                    ? "translate-y-0 opacity-100"
-                    : "translate-y-10 opacity-0"
-                }`}
-              >
-                <div
-                  className={`h-full bg-gradient-to-br ${item.gradient} backdrop-blur-xl border ${item.border} rounded-3xl p-6 sm:p-8 transition-all duration-500 group-hover:scale-105 group-hover:shadow-2xl`}
-                >
-                  <div className="text-4xl sm:text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                    {item.icon}
-                  </div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 group-hover:text-purple-200 transition-colors">
-                    {item.title}
-                  </h3>
-                  <p className="text-sm text-purple-300 mb-4 font-mono">
-                    {item.subtitle}
-                  </p>
-                  <p className="text-gray-300 leading-relaxed group-hover:text-gray-200 transition-colors">
-                    {item.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Problem - Premium Card */}
-      <section className="relative z-10 py-16 sm:py-24">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div
-            className={`text-center mb-12 transition-all duration-1000 delay-700 ${
-              isLoaded
-                ? "translate-y-0 opacity-100"
-                : "translate-y-10 opacity-0"
-            }`}
-          >
-            <h2 className="text-3xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-              Featured Deep Dive
-            </h2>
-          </div>
-
-          <Link href="/problems">
-            <div
-              className={`relative group cursor-pointer transition-all duration-1000 delay-800 ${
-                isLoaded
-                  ? "translate-y-0 opacity-100"
-                  : "translate-y-10 opacity-0"
-              }`}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-500"></div>
-              <div className="relative bg-black/40 backdrop-blur-xl border border-white/20 rounded-3xl p-6 sm:p-8 lg:p-12 group-hover:border-white/30 transition-all duration-500">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
-                  <div className="flex items-center space-x-4 mb-4 sm:mb-0">
-                    <span className="text-sm font-mono text-gray-400 bg-white/5 px-3 py-1 rounded-full">
-                      #001
-                    </span>
-                    <span className="bg-gradient-to-r from-green-400 to-emerald-400 text-black px-3 py-1 rounded-full text-sm font-semibold">
-                      EASY
-                    </span>
-                  </div>
-                  <div className="flex space-x-2">
-                    <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded">
-                      Array
-                    </span>
-                    <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded">
-                      Hash Table
-                    </span>
-                  </div>
-                </div>
-
-                <h3 className="text-2xl sm:text-4xl font-bold mb-4 text-white group-hover:bg-gradient-to-r group-hover:from-purple-200 group-hover:to-blue-200 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-500">
-                  Two Sum Problem
-                </h3>
-                <p className="text-lg sm:text-xl text-gray-300 mb-12 leading-relaxed">
-                  Given an array of integers, return indices of two numbers that
-                  add up to a specific target.
-                </p>
-
-                <div className="grid lg:grid-cols-3 gap-6 mb-8">
-                  {[
-                    {
-                      title: "E-commerce Cart Logic",
-                      tech: "React + TypeScript",
-                      description:
-                        "Find products that fit within user's budget constraints using optimized lookup",
-                      icon: "🛒",
-                      gradient: "from-purple-500/10 to-pink-500/10",
-                      accent: "purple",
-                    },
-                    {
-                      title: "User Matching API",
-                      tech: "Node.js + Redis",
-                      description:
-                        "Match users with complementary skills for team formation in O(n) time",
-                      icon: "👥",
-                      gradient: "from-blue-500/10 to-cyan-500/10",
-                      accent: "blue",
-                    },
-                    {
-                      title: "Load Balancer Design",
-                      tech: "Kubernetes + AWS",
-                      description:
-                        "Distribute requests across server pairs using consistent hashing principles",
-                      icon: "⚖️",
-                      gradient: "from-green-500/10 to-teal-500/10",
-                      accent: "green",
-                    },
-                  ].map((app, index) => (
-                    <div
-                      key={index}
-                      className={`bg-gradient-to-br ${app.gradient} border border-white/10 rounded-2xl p-6 transition-all duration-500 hover:scale-105 hover:border-${app.accent}-500/30`}
-                    >
-                      <div className="text-3xl mb-4">{app.icon}</div>
-                      <h4 className="text-lg font-semibold text-white mb-2">
-                        {app.title}
-                      </h4>
-                      <p
-                        className={`text-sm text-${app.accent}-300 mb-3 font-mono`}
-                      >
-                        {app.tech}
-                      </p>
-                      <p className="text-gray-400 text-sm leading-relaxed">
-                        {app.description}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="text-center">
-                  <div className="group relative bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-2xl font-semibold transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 inline-flex">
-                    <span className="relative z-10 flex items-center space-x-2">
-                      <span>Read Full Analysis</span>
-                      <span className="group-hover:translate-x-1 transition-transform duration-300">
-                        →
-                      </span>
-                    </span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Link>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section id="contact" className="relative z-10 py-16 sm:py-24">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div
-            className={`transition-all duration-1000 delay-900 ${
-              isLoaded
-                ? "translate-y-0 opacity-100"
-                : "translate-y-10 opacity-0"
-            }`}
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-              Ready to Bridge the Gap?
-            </h2>
-            <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
-              Start your journey from algorithmic puzzles to production-ready
-              engineering solutions.
-            </p>
-            <Link href="/problems">
-              <button className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25">
-                Start Learning Now
-              </button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-white/10 bg-black/50 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="text-lg font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-4 md:mb-0">
-              LeetCode → Engineering
-            </div>
-            <div className="flex space-x-6">
-              {navigationItems.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                >
-                  {item.name}
-                </Link>
-              ))}
-            </div>
-          </div>
-          <div className="border-t border-white/10 mt-8 pt-8 text-center text-gray-500 text-sm">
-            <p>
-              &copy; 2025 LeetCode → Engineering. Bridging algorithms to
-              real-world systems.
-            </p>
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
-}
-</file>
-
-<file path=".eslintrc.json">
-{
-  "extends": "next/core-web-vitals"
-}
-</file>
-
-<file path=".gitignore">
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# local env files
-.env*.local
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-</file>
-
-<file path="next.config.js">
-/** @type {import('next').NextConfig} */
-const nextConfig = {}
-
-module.exports = nextConfig
-</file>
-
-<file path="package.json">
-{
-  "name": "my-smooth-blog",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "gray-matter": "^4.0.3",
-    "next": "13.5.11",
-    "react": "^18",
-    "react-dom": "^18",
-    "remark": "^15.0.1",
-    "remark-html": "^16.0.1"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "autoprefixer": "^10",
-    "eslint": "^8",
-    "eslint-config-next": "13.5.11",
-    "postcss": "^8",
-    "tailwindcss": "^3",
-    "typescript": "^5"
-  }
-}
-</file>
-
-<file path="postcss.config.js">
-module.exports = {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
-}
-</file>
-
 <file path="README.md">
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
@@ -2316,59 +4388,428 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
+### Environment variables
+Copy `.env.example` to `.env.local` and adjust if needed. The example contains Supabase credentials used by the API routes.
+
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 </file>
 
-<file path="tailwind.config.ts">
-import type { Config } from 'tailwindcss'
+<file path="src/app/page.tsx">
+"use client";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import StreakCalendar from "./components/StreakCalendar";
 
-const config: Config = {
-  content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
-  theme: {
-    extend: {
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-      },
-    },
-  },
-  plugins: [],
+interface Stats {
+  totalProblems: number;
+  totalBlogs: number;
+  currentStreak: number;
+  longestStreak: number;
+  dueReviews: number;
 }
-export default config
+
+interface BlogPost {
+  id: string;
+  title: string;
+  category: "ml-platform" | "distributed-systems" | "recommendation-systems";
+  createdAt: string;
+}
+
+export default function Home() {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [stats, setStats] = useState<Stats>({
+    totalProblems: 0,
+    totalBlogs: 0,
+    currentStreak: 0,
+    longestStreak: 0,
+    dueReviews: 0,
+  });
+  const [recentBlogs, setRecentBlogs] = useState<BlogPost[]>([]);
+  const [notifications, setNotifications] = useState<string[]>([]);
+
+  useEffect(() => {
+    setIsLoaded(true);
+    fetchStats();
+    fetchRecentBlogs();
+    checkDailyReminders();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      const [problemsRes, blogsRes, streakRes, reviewsRes] = await Promise.all([
+        fetch("/api/problems"),
+        fetch("/api/blogs"),
+        fetch("/api/checkin"),
+        fetch("/api/reviews"),
+      ]);
+
+      const problemsData = await problemsRes.json();
+      const blogsData = await blogsRes.json();
+      const streakData = await streakRes.json();
+      const reviewsData = await reviewsRes.json();
+
+      setStats({
+        totalProblems: problemsData.problems?.length || 0,
+        totalBlogs: blogsData.blogs?.length || 0,
+        currentStreak: streakData.currentStreak || 0,
+        longestStreak: streakData.longestStreak || 0,
+        dueReviews: reviewsData.dueCount || 0,
+      });
+    } catch (error) {
+      console.error("Error fetching stats:", error);
+    }
+  };
+
+  const fetchRecentBlogs = async () => {
+    try {
+      const response = await fetch("/api/blogs?limit=3");
+      const data = await response.json();
+      setRecentBlogs(data.blogs || []);
+    } catch (error) {
+      console.error("Error fetching blogs:", error);
+    }
+  };
+
+  const checkDailyReminders = async () => {
+    try {
+      const response = await fetch("/api/notifications");
+      const data = await response.json();
+      setNotifications(data.reminders || []);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
+  const handleDailyCheckIn = async () => {
+    try {
+      const response = await fetch("/api/checkin", {
+        method: "POST",
+      });
+      if (response.ok) {
+        fetchStats();
+        alert("Daily check-in completed! Keep up the great work!");
+      }
+    } catch (error) {
+      console.error("Check-in error:", error);
+    }
+  };
+
+  const categoryConfig = {
+    "ml-platform": {
+      name: "ML Platform & MLOps",
+      gradient: "from-orange-400 to-red-400",
+      bg: "bg-orange-500/20",
+      icon: "🤖",
+    },
+    "distributed-systems": {
+      name: "Distributed Systems",
+      gradient: "from-blue-400 to-indigo-400",
+      bg: "bg-blue-500/20",
+      icon: "🌐",
+    },
+    "recommendation-systems": {
+      name: "Recommendation Systems",
+      gradient: "from-green-400 to-teal-400",
+      bg: "bg-green-500/20",
+      icon: "🎯",
+    },
+  };
+
+  return (
+    <div className="min-h-screen bg-black text-white overflow-hidden">
+      {/* Animated Background */}
+      <div className="fixed inset-0 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-black"></div>
+        <div className="absolute top-0 left-1/4 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      </div>
+
+      {/* Navigation with Notifications */}
+      <nav className="relative z-50 backdrop-blur-xl bg-black/50 border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <Link
+              href="/"
+              className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent"
+            >
+              Mithilesh&apos;s Engineering Journey
+            </Link>
+            <div className="flex items-center space-x-6">
+              {/* Notification Bell */}
+              {notifications.length > 0 && (
+                <div className="relative group">
+                  <button className="p-2 hover:bg-white/10 rounded-lg transition-all">
+                    <span className="text-2xl">🔔</span>
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {notifications.length}
+                    </span>
+                  </button>
+                  <div className="absolute right-0 mt-2 w-80 bg-gray-900 rounded-2xl shadow-2xl p-4 hidden group-hover:block">
+                    <h3 className="text-sm font-semibold text-gray-300 mb-2">
+                      Study Reminders
+                    </h3>
+                    {notifications.map((notif, i) => (
+                      <div
+                        key={i}
+                        className="text-sm text-gray-400 py-2 border-b border-gray-800 last:border-0"
+                      >
+                        {notif}
+                      </div>
+                    ))}
+                    <Link
+                      href="/anki"
+                      className="block mt-2 text-center text-purple-400 hover:text-purple-300"
+                    >
+                      Start Review Session →
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {/* Daily Check-in Button */}
+              <button
+                onClick={handleDailyCheckIn}
+                className="bg-gradient-to-r from-green-600 to-emerald-600 px-4 py-2 rounded-xl font-semibold hover:scale-105 transition-all"
+              >
+                📅 Daily Check-in
+              </button>
+
+              <Link
+                href="/admin"
+                className="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl transition-all"
+              >
+                Admin
+              </Link>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section with Stats */}
+      <section className="relative z-10 pt-12 pb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Profile Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-5xl sm:text-7xl font-bold mb-4 bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
+              Mithilesh Kumar
+            </h1>
+            <p className="text-xl text-gray-300 mb-6">
+              Software Engineer • Distributed Systems • ML Infrastructure
+            </p>
+
+            {/* Current Streak Display */}
+            <div className="inline-flex items-center space-x-2 bg-orange-500/20 text-orange-300 px-6 py-3 rounded-full mb-8">
+              <span className="text-2xl">🔥</span>
+              <span className="text-lg font-semibold">
+                {stats.currentStreak} Day Streak
+              </span>
+            </div>
+
+            {/* Key Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-12">
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+                <div className="text-3xl font-bold text-purple-400">
+                  {stats.totalProblems}
+                </div>
+                <div className="text-sm text-gray-400">Problems Solved</div>
+              </div>
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+                <div className="text-3xl font-bold text-blue-400">
+                  {stats.totalBlogs}
+                </div>
+                <div className="text-sm text-gray-400">Technical Blogs</div>
+              </div>
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+                <div className="text-3xl font-bold text-green-400">
+                  {stats.longestStreak}
+                </div>
+                <div className="text-sm text-gray-400">Longest Streak</div>
+              </div>
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+                <div className="text-3xl font-bold text-orange-400">
+                  {stats.dueReviews}
+                </div>
+                <div className="text-sm text-gray-400">Reviews Due</div>
+              </div>
+            </div>
+          </div>
+
+          {/* GitHub-like Contribution Calendar */}
+          <div className="mb-16">
+            <h2 className="text-2xl font-bold text-center mb-6 text-gray-300">
+              Daily Learning Activity
+            </h2>
+            <StreakCalendar />
+          </div>
+
+          {/* Quick Actions for Recruiters */}
+          <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 backdrop-blur-xl border border-white/20 rounded-3xl p-8 mb-16">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                Interested in My Profile?
+              </h2>
+              <p className="text-gray-300 mb-6">
+                I&apos;m actively seeking opportunities in distributed systems,
+                ML infrastructure, and backend engineering.
+              </p>
+              <div className="flex flex-wrap justify-center gap-4">
+                <a
+                  href="mailto:your-email@example.com"
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-3 rounded-xl font-semibold hover:scale-105 transition-all"
+                >
+                  📧 Request Interview
+                </a>
+                <a
+                  href="/resume.pdf"
+                  className="bg-white/10 hover:bg-white/20 text-white px-8 py-3 rounded-xl font-semibold transition-all"
+                >
+                  📄 Download Resume
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Specialized Knowledge Sections */}
+          <div className="mb-16">
+            <h2 className="text-3xl font-bold text-center mb-8 text-gray-300">
+              Specialized Knowledge Areas
+            </h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              {Object.entries(categoryConfig).map(([key, config]) => (
+                <Link key={key} href={`/blogs?category=${key}`}>
+                  <div className="group cursor-pointer">
+                    <div
+                      className={`${config.bg} backdrop-blur-xl border border-white/10 rounded-3xl p-8 transition-all duration-500 hover:scale-105 hover:border-white/20`}
+                    >
+                      <div className="text-5xl mb-4">{config.icon}</div>
+                      <h3
+                        className={`text-xl font-bold mb-2 bg-gradient-to-r ${config.gradient} bg-clip-text text-transparent`}
+                      >
+                        {config.name}
+                      </h3>
+                      <p className="text-gray-400 text-sm">
+                        Deep dives into {config.name.toLowerCase()} concepts and
+                        implementations
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Recent Blog Posts */}
+          {recentBlogs.length > 0 && (
+            <div className="mb-16">
+              <div className="flex justify-between items-center mb-8">
+                <h2 className="text-3xl font-bold text-gray-300">
+                  Recent Technical Deep Dives
+                </h2>
+                <Link
+                  href="/blogs"
+                  className="text-purple-400 hover:text-purple-300"
+                >
+                  View All →
+                </Link>
+              </div>
+              <div className="grid md:grid-cols-3 gap-6">
+                {recentBlogs.map((blog) => (
+                  <Link key={blog.id} href={`/blogs/${blog.id}`}>
+                    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:scale-105 transition-all">
+                      <span
+                        className={`inline-block ${
+                          categoryConfig[blog.category].bg
+                        } text-sm px-3 py-1 rounded-full mb-3`}
+                      >
+                        {categoryConfig[blog.category].name}
+                      </span>
+                      <h3 className="text-lg font-semibold text-white mb-2">
+                        {blog.title}
+                      </h3>
+                      <p className="text-gray-400 text-sm">
+                        {new Date(blog.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Quick Links */}
+          <div className="grid md:grid-cols-3 gap-6">
+            <Link href="/problems">
+              <div className="bg-purple-500/10 backdrop-blur-xl border border-purple-500/30 rounded-2xl p-6 hover:scale-105 transition-all text-center">
+                <div className="text-4xl mb-3">🧮</div>
+                <h3 className="text-lg font-semibold text-purple-300">
+                  LeetCode Solutions
+                </h3>
+                <p className="text-gray-400 text-sm mt-2">
+                  With real-world applications
+                </p>
+              </div>
+            </Link>
+            <Link href="/anki">
+              <div className="bg-blue-500/10 backdrop-blur-xl border border-blue-500/30 rounded-2xl p-6 hover:scale-105 transition-all text-center">
+                <div className="text-4xl mb-3">🎯</div>
+                <h3 className="text-lg font-semibold text-blue-300">
+                  Spaced Repetition
+                </h3>
+                <p className="text-gray-400 text-sm mt-2">
+                  {stats.dueReviews} reviews pending
+                </p>
+              </div>
+            </Link>
+            <Link href="/blogs">
+              <div className="bg-green-500/10 backdrop-blur-xl border border-green-500/30 rounded-2xl p-6 hover:scale-105 transition-all text-center">
+                <div className="text-4xl mb-3">📝</div>
+                <h3 className="text-lg font-semibold text-green-300">
+                  Technical Blogs
+                </h3>
+                <p className="text-gray-400 text-sm mt-2">
+                  In-depth technical articles
+                </p>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
 </file>
 
-<file path="tsconfig.json">
+<file path="package.json">
 {
-  "compilerOptions": {
-    "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+  "name": "my-smooth-blog",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "next": "13.5.11",
+    "react": "^18",
+    "react-dom": "^18",
+    "remark": "^15.0.1",
+    "remark-html": "^16.0.1",
+    "@supabase/supabase-js": "^2.43.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10",
+    "eslint": "^8",
+    "eslint-config-next": "13.5.11",
+    "postcss": "^8",
+    "tailwindcss": "^3",
+    "typescript": "^5"
+  }
 }
 </file>
 

@@ -1,45 +1,51 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 
-
-
 export async function GET() {
   try {
     const reminders: string[] = [];
     
-    const { data: reviews } = await supabaseAdmin.from('reviews').select('*');
-    const now = new Date();
-    for (const review of reviews || []) {
-      if (new Date(review.next_review as string) <= now) {
-        const { data: problem } = await supabaseAdmin
-          .from('problems')
-          .select('title, difficulty')
-          .eq('id', review.problem_id)
-          .maybeSingle();
-        if (problem) {
-          reminders.push(`Review due: ${problem.title} (${problem.difficulty})`);
-        }
-      }
-    }
+    // Check for due reviews
+    const now = new Date().toISOString();
+    const { data: dueReviews } = await supabaseAdmin
+      .from('reviews')
+      .select(`
+        *,
+        problems (
+          title,
+          difficulty
+        )
+      `)
+      .lte('next_review', now);
 
-    // Add daily study reminder if no check-in today
-    const { data: checkins } = await supabaseAdmin
-      .from('checkins')
-      .select('date');
+    dueReviews?.forEach(review => {
+      if (review.problems) {
+        reminders.push(`Review due: ${review.problems.title} (${review.problems.difficulty})`);
+      }
+    });
+
+    // Check if checked in today
     const today = new Date().toISOString().split('T')[0];
-    const checkedInToday = checkins?.some(c => c.date === today);
-    if (!checkedInToday) {
+    const { data: todayCheckin } = await supabaseAdmin
+      .from('checkins')
+      .select('*')
+      .eq('date', today)
+      .single();
+
+    if (!todayCheckin) {
       reminders.push("Don't forget your daily check-in! Keep your streak alive 🔥");
     }
 
-    // Add blog reminder (write at least one blog per week)
+    // Check recent blog activity
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
-    const { data: blogs } = await supabaseAdmin
+    
+    const { data: recentBlogs } = await supabaseAdmin
       .from('blogs')
-      .select('created_at');
-    const recentBlogs = (blogs || []).filter(b => new Date(b.created_at as string) > weekAgo);
-    if (recentBlogs.length === 0) {
+      .select('*')
+      .gte('created_at', weekAgo.toISOString());
+
+    if (!recentBlogs || recentBlogs.length === 0) {
       reminders.push("Time to write a technical blog! Share your knowledge 📝");
     }
 

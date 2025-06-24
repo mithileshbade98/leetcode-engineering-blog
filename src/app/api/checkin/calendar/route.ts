@@ -1,35 +1,49 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 
-
 export async function GET() {
   try {
-    const calendar: { [date: string]: number } = {};
-    
-    const { data: checkins } = await supabaseAdmin
+    // Get checkins data
+    const { data: checkins, error: checkinsError } = await supabaseAdmin
       .from('checkins')
-      .select('date');
+      .select('date, activities')
+      .order('date', { ascending: false })
+      .limit(365);
 
-    checkins?.forEach(c => {
-      const date = c.date as string;
-      calendar[date] = (calendar[date] || 0) + 1;
-    });
+    if (checkinsError) throw checkinsError;
 
-    const { data: problems } = await supabaseAdmin
+    // Get problems count by date
+    const { data: problems, error: problemsError } = await supabaseAdmin
       .from('problems')
       .select('created_at');
 
-    problems?.forEach(p => {
-      const date = new Date(p.created_at as string).toISOString().split('T')[0];
-      calendar[date] = (calendar[date] || 0) + 2;
-    });
+    if (problemsError) throw problemsError;
 
-    const { data: blogs } = await supabaseAdmin
+    // Get blogs count by date
+    const { data: blogs, error: blogsError } = await supabaseAdmin
       .from('blogs')
       .select('created_at');
 
-    blogs?.forEach(b => {
-      const date = new Date(b.created_at as string).toISOString().split('T')[0];
+    if (blogsError) throw blogsError;
+
+    // Combine all activities by date
+    const calendar: { [date: string]: number } = {};
+
+    // Add checkin activities
+    checkins?.forEach(checkin => {
+      const date = checkin.date as string;
+      calendar[date] = (calendar[date] || 0) + (checkin.activities || 1);
+    });
+
+    // Add problems (weight: 2)
+    problems?.forEach(problem => {
+      const date = new Date(problem.created_at as string).toISOString().split('T')[0];
+      calendar[date] = (calendar[date] || 0) + 2;
+    });
+
+    // Add blogs (weight: 3)
+    blogs?.forEach(blog => {
+      const date = new Date(blog.created_at as string).toISOString().split('T')[0];
       calendar[date] = (calendar[date] || 0) + 3;
     });
 

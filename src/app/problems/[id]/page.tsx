@@ -5,27 +5,28 @@ import { useParams } from "next/navigation";
 
 interface Problem {
   id: string;
-  leetcodeNumber: number;
+  leetcode_number: number;
   title: string;
   difficulty: "Easy" | "Medium" | "Hard";
+  category: string;
   description: string;
   solution: string;
-  timeComplexity: string;
-  spaceComplexity: string;
+  time_complexity: string;
+  space_complexity: string;
   tags: string[];
-  lldQuestion: string;
-  lldApproach: string;
-  lldTechStack: string[];
-  lldCodeExample: string;
-  hldQuestion: string;
-  hldApproach: string;
-  hldTechStack: string[];
-  hldArchitecture: string;
-  systemDesignQuestion: string;
-  systemDesignApproach: string;
-  systemDesignDiagram: string;
-  scalingConsiderations: string;
-  createdAt: string;
+  lld_question: string;
+  lld_approach: string;
+  lld_tech_stack: string[];
+  lld_code_example: string;
+  hld_question: string;
+  hld_approach: string;
+  hld_tech_stack: string[];
+  hld_architecture: string;
+  system_design_question: string;
+  system_design_approach: string;
+  system_design_diagram: string;
+  scaling_considerations: string;
+  created_at: string;
 }
 
 export default function ProblemDetailPage() {
@@ -40,17 +41,39 @@ export default function ProblemDetailPage() {
 
   const fetchProblem = async () => {
     try {
-      const response = await fetch("/api/problems");
-      const data = await response.json();
-      const foundProblem = data.problems?.find(
-        (p: Problem) => p.id === params.id
-      );
-      setProblem(foundProblem || null);
+      const response = await fetch(`/api/problems/${params.id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setProblem(data);
+      }
     } catch (error) {
       console.error("Failed to fetch problem:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const categoryConfig = {
+    "ml-ops": {
+      name: "ML Ops & Platform",
+      icon: "🤖",
+      gradient: "from-orange-400 to-red-400",
+    },
+    "distributed-systems": {
+      name: "Distributed Systems",
+      icon: "🌐",
+      gradient: "from-blue-400 to-indigo-400",
+    },
+    "recommendation-systems": {
+      name: "Recommendation Systems",
+      icon: "🎯",
+      gradient: "from-green-400 to-teal-400",
+    },
+    general: {
+      name: "General",
+      icon: "📚",
+      gradient: "from-purple-400 to-pink-400",
+    },
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -93,6 +116,10 @@ export default function ProblemDetailPage() {
     );
   }
 
+  const config =
+    categoryConfig[problem.category as keyof typeof categoryConfig] ||
+    categoryConfig.general;
+
   const tabs = [
     { id: "leetcode", label: "Algorithm", icon: "🧮" },
     { id: "lld", label: "Frontend Design", icon: "🎨" },
@@ -114,8 +141,12 @@ export default function ProblemDetailPage() {
               <span>Back to Problems</span>
             </Link>
             <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <span className="text-2xl">{config.icon}</span>
+                <span className="text-sm text-gray-400">{config.name}</span>
+              </div>
               <span className="text-sm font-mono text-gray-400 bg-white/10 px-3 py-1 rounded-full">
-                #{problem.leetcodeNumber}
+                #{problem.leetcode_number}
               </span>
               <span
                 className={`text-xs font-semibold px-3 py-1 rounded-full bg-gradient-to-r ${getDifficultyColor(
@@ -126,7 +157,9 @@ export default function ProblemDetailPage() {
               </span>
             </div>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+          <h1
+            className={`text-3xl md:text-4xl font-bold bg-gradient-to-r ${config.gradient} bg-clip-text text-transparent`}
+          >
             {problem.title}
           </h1>
         </div>
@@ -186,7 +219,7 @@ export default function ProblemDetailPage() {
                     Time Complexity
                   </h3>
                   <p className="text-green-400 font-mono text-xl">
-                    {problem.timeComplexity}
+                    {problem.time_complexity}
                   </p>
                 </div>
                 <div className="bg-white/5 rounded-2xl p-6">
@@ -194,7 +227,7 @@ export default function ProblemDetailPage() {
                     Space Complexity
                   </h3>
                   <p className="text-blue-400 font-mono text-xl">
-                    {problem.spaceComplexity}
+                    {problem.space_complexity}
                   </p>
                 </div>
               </div>
@@ -221,50 +254,58 @@ export default function ProblemDetailPage() {
                 🎨 Frontend Design Application
               </h2>
 
-              <div className="bg-white/5 rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-3">
-                  Design Challenge
-                </h3>
-                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
-                  {problem.lldQuestion}
-                </p>
-              </div>
-
-              <div className="bg-white/5 rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-3">
-                  Approach
-                </h3>
-                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
-                  {problem.lldApproach}
-                </p>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-3">
-                  Implementation
-                </h3>
-                <div className="bg-gray-900 rounded-2xl p-6 font-mono">
-                  <pre className="text-green-300 text-sm overflow-x-auto whitespace-pre-wrap">
-                    {problem.lldCodeExample}
-                  </pre>
+              {problem.lld_question && (
+                <div className="bg-white/5 rounded-2xl p-6">
+                  <h3 className="text-lg font-semibold text-white mb-3">
+                    Design Challenge
+                  </h3>
+                  <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
+                    {problem.lld_question}
+                  </p>
                 </div>
-              </div>
+              )}
 
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-3">
-                  Tech Stack
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {problem.lldTechStack.map((tech, index) => (
-                    <span
-                      key={index}
-                      className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm"
-                    >
-                      {tech}
-                    </span>
-                  ))}
+              {problem.lld_approach && (
+                <div className="bg-white/5 rounded-2xl p-6">
+                  <h3 className="text-lg font-semibold text-white mb-3">
+                    Approach
+                  </h3>
+                  <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
+                    {problem.lld_approach}
+                  </p>
                 </div>
-              </div>
+              )}
+
+              {problem.lld_code_example && (
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3">
+                    Implementation
+                  </h3>
+                  <div className="bg-gray-900 rounded-2xl p-6 font-mono">
+                    <pre className="text-green-300 text-sm overflow-x-auto whitespace-pre-wrap">
+                      {problem.lld_code_example}
+                    </pre>
+                  </div>
+                </div>
+              )}
+
+              {problem.lld_tech_stack && problem.lld_tech_stack.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3">
+                    Tech Stack
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {problem.lld_tech_stack.map((tech, index) => (
+                      <span
+                        key={index}
+                        className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -274,48 +315,56 @@ export default function ProblemDetailPage() {
                 ⚙️ Backend Design Application
               </h2>
 
-              <div className="bg-white/5 rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-3">
-                  System Challenge
-                </h3>
-                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
-                  {problem.hldQuestion}
-                </p>
-              </div>
-
-              <div className="bg-white/5 rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-3">
-                  Approach
-                </h3>
-                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
-                  {problem.hldApproach}
-                </p>
-              </div>
-
-              <div className="bg-white/5 rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-3">
-                  Architecture
-                </h3>
-                <p className="text-gray-300 leading-relaxed">
-                  {problem.hldArchitecture}
-                </p>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-3">
-                  Tech Stack
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {problem.hldTechStack.map((tech, index) => (
-                    <span
-                      key={index}
-                      className="bg-green-500/20 text-green-300 px-3 py-1 rounded-full text-sm"
-                    >
-                      {tech}
-                    </span>
-                  ))}
+              {problem.hld_question && (
+                <div className="bg-white/5 rounded-2xl p-6">
+                  <h3 className="text-lg font-semibold text-white mb-3">
+                    System Challenge
+                  </h3>
+                  <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
+                    {problem.hld_question}
+                  </p>
                 </div>
-              </div>
+              )}
+
+              {problem.hld_approach && (
+                <div className="bg-white/5 rounded-2xl p-6">
+                  <h3 className="text-lg font-semibold text-white mb-3">
+                    Approach
+                  </h3>
+                  <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
+                    {problem.hld_approach}
+                  </p>
+                </div>
+              )}
+
+              {problem.hld_architecture && (
+                <div className="bg-white/5 rounded-2xl p-6">
+                  <h3 className="text-lg font-semibold text-white mb-3">
+                    Architecture
+                  </h3>
+                  <p className="text-gray-300 leading-relaxed">
+                    {problem.hld_architecture}
+                  </p>
+                </div>
+              )}
+
+              {problem.hld_tech_stack && problem.hld_tech_stack.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3">
+                    Tech Stack
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {problem.hld_tech_stack.map((tech, index) => (
+                      <span
+                        key={index}
+                        className="bg-green-500/20 text-green-300 px-3 py-1 rounded-full text-sm"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -325,43 +374,49 @@ export default function ProblemDetailPage() {
                 🏗️ Large Scale System Design
               </h2>
 
-              <div className="bg-white/5 rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-3">
-                  System Design Challenge
-                </h3>
-                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
-                  {problem.systemDesignQuestion}
-                </p>
-              </div>
+              {problem.system_design_question && (
+                <div className="bg-white/5 rounded-2xl p-6">
+                  <h3 className="text-lg font-semibold text-white mb-3">
+                    System Design Challenge
+                  </h3>
+                  <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
+                    {problem.system_design_question}
+                  </p>
+                </div>
+              )}
 
-              <div className="bg-white/5 rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-3">
-                  Design Approach
-                </h3>
-                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
-                  {problem.systemDesignApproach}
-                </p>
-              </div>
+              {problem.system_design_approach && (
+                <div className="bg-white/5 rounded-2xl p-6">
+                  <h3 className="text-lg font-semibold text-white mb-3">
+                    Design Approach
+                  </h3>
+                  <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
+                    {problem.system_design_approach}
+                  </p>
+                </div>
+              )}
 
-              {problem.systemDesignDiagram && (
+              {problem.system_design_diagram && (
                 <div className="bg-white/5 rounded-2xl p-6">
                   <h3 className="text-lg font-semibold text-white mb-3">
                     System Architecture
                   </h3>
                   <p className="text-gray-300 leading-relaxed">
-                    {problem.systemDesignDiagram}
+                    {problem.system_design_diagram}
                   </p>
                 </div>
               )}
 
-              <div className="bg-white/5 rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-3">
-                  Scaling Considerations
-                </h3>
-                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
-                  {problem.scalingConsiderations}
-                </p>
-              </div>
+              {problem.scaling_considerations && (
+                <div className="bg-white/5 rounded-2xl p-6">
+                  <h3 className="text-lg font-semibold text-white mb-3">
+                    Scaling Considerations
+                  </h3>
+                  <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
+                    {problem.scaling_considerations}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>

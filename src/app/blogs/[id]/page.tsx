@@ -6,12 +6,12 @@ import { useParams } from "next/navigation";
 interface BlogPost {
   id: string;
   title: string;
-  category: "ml-platform" | "distributed-systems" | "recommendation-systems";
+  category: "ml-ops" | "distributed-systems" | "recommendation-systems";
   content: string;
   tags: string[];
-  keyTakeaways: string[];
-  relatedProblems: string[];
-  createdAt: string;
+  key_takeaways: string[];
+  related_problems: string[];
+  created_at: string;
 }
 
 export default function BlogDetailPage() {
@@ -25,10 +25,11 @@ export default function BlogDetailPage() {
 
   const fetchBlog = async () => {
     try {
-      const response = await fetch("/api/blogs");
-      const data = await response.json();
-      const foundBlog = data.blogs?.find((b: BlogPost) => b.id === params.id);
-      setBlog(foundBlog || null);
+      const response = await fetch(`/api/blogs/${params.id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setBlog(data);
+      }
     } catch (error) {
       console.error("Failed to fetch blog:", error);
     } finally {
@@ -37,8 +38,8 @@ export default function BlogDetailPage() {
   };
 
   const categoryConfig = {
-    "ml-platform": {
-      name: "ML Platform & MLOps",
+    "ml-ops": {
+      name: "ML Ops & Platform",
       gradient: "from-orange-400 to-red-400",
       bg: "bg-orange-500/20",
       icon: "🤖",
@@ -143,7 +144,7 @@ export default function BlogDetailPage() {
           <div className="flex items-center space-x-4 text-gray-400">
             <span>
               Published on{" "}
-              {new Date(blog.createdAt).toLocaleDateString("en-US", {
+              {new Date(blog.created_at).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
@@ -157,13 +158,13 @@ export default function BlogDetailPage() {
 
       <div className="max-w-4xl mx-auto px-4 py-12">
         {/* Key Takeaways Box */}
-        {blog.keyTakeaways.length > 0 && (
+        {blog.key_takeaways.length > 0 && (
           <div className="bg-gradient-to-r from-purple-600/10 to-blue-600/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 mb-12">
             <h3 className="text-lg font-semibold text-purple-400 mb-4">
               🎯 Key Takeaways
             </h3>
             <ul className="space-y-2">
-              {blog.keyTakeaways.map((takeaway, index) => (
+              {blog.key_takeaways.map((takeaway, index) => (
                 <li key={index} className="flex items-start text-gray-300">
                   <span className="text-green-400 mr-3 mt-1">✓</span>
                   <span>{takeaway}</span>
@@ -194,13 +195,13 @@ export default function BlogDetailPage() {
         </div>
 
         {/* Related Problems */}
-        {blog.relatedProblems.length > 0 && (
+        {blog.related_problems.length > 0 && (
           <div className="mt-8">
             <h3 className="text-lg font-semibold text-gray-300 mb-4">
               Related LeetCode Problems
             </h3>
             <div className="space-y-3">
-              {blog.relatedProblems.map((problem, index) => (
+              {blog.related_problems.map((problem, index) => (
                 <Link
                   key={index}
                   href="/problems"
@@ -219,8 +220,7 @@ export default function BlogDetailPage() {
             Found this helpful?
           </h3>
           <p className="text-gray-300 mb-6">
-            I&apos;m actively seeking opportunities in{" "}
-            {config.name.toLowerCase()}.
+            I&apos;m actively seeking opportunities in {config.name.toLowerCase()}.
           </p>
 
           <a
